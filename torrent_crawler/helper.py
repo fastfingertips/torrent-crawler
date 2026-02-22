@@ -5,9 +5,8 @@ import sys
 import subprocess
 import zipfile
 import beaupy
-from torrent_crawler.color import Color
 from torrent_crawler.constants import Constants
-from torrent_crawler.print import Print
+from torrent_crawler.print import Print, console
 
 
 class Helper:
@@ -87,10 +86,9 @@ class Helper:
             progress = 1
             status = "Done...\r\n"
         block = int(round(bar_length * progress))
-        text = "\rCrawling like a snake: {0}[{1}]{2} {3}% [{4}/{5}] {6}".format(
-            Color.BLUE, "=" * block + "-" * (bar_length - block), Color.END, int(progress * 100), index, total, status)
-        sys.stdout.write(text)
-        sys.stdout.flush()
+        text = "\rCrawling like a snake: [blue][{0}][/blue] {1}% [{2}/{3}] {4}".format(
+            "=" * block + "-" * (bar_length - block), int(progress * 100), index, total, status)
+        console.print(text, end="")
 
     @staticmethod
     def open_magnet_link(magnet):

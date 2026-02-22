@@ -1,28 +1,29 @@
-from torrent_crawler.color import Color
+from rich.console import Console
 from torrent_crawler.constants import Constants
 
+console = Console()
 
 class Print:
     @staticmethod
     def bold_string(string):
-        print(Color.get_bold_string(string))
+        console.print(f"[bold]{string}[/bold]")
 
     @staticmethod
     def long_hash():
-        print('###########################################')
+        console.print('###########################################')
 
     @staticmethod
     def wrong_option():
-        print(Constants.wrong_option_text)
+        console.print(f"[red]{Constants.wrong_option_text}[/red]")
 
     @staticmethod
     def colored_note(note: str):
-        print('{0}Note:: {1}{2}'.format(Color.BLUE, note, Color.END))
+        console.print(f"[blue]Note::[/blue] {note}")
 
     @staticmethod
     def option(index: int, option: str):
-        print('{0}{1}: {2}{3}'.format(Color.YELLOW, index, option, Color.END))
+        console.print(f"[yellow]{index}: {option}[/yellow]")
 
     @staticmethod
     def thanks():
-        print('\n{0}{1}{2}'.format(Color.BLUE, Constants.thanks_text, Color.END))
+        console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
