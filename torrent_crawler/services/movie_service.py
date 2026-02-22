@@ -95,9 +95,9 @@ class MovieService:
                 rating_link = rating.find('a')
                 if rating_link:
                     rater = rating_link.get('title')
-                    rating_given = rating.find('span', {'itemprop': 'ratingValue'}).text
-                    if rater and rating_given:
-                        rating_list[rater] = rating_given
+                    rating_given_span = rating.find('span', {'itemprop': 'ratingValue'})
+                    if rater and rating_given_span:
+                        rating_list[rater] = rating_given_span.text
             movie.set_torrents(torrent_list)
             movie.raw_torrents = torrent_list
             movie.set_ratings(rating_list)
