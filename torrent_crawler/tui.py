@@ -1,6 +1,6 @@
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.widgets import Header, Footer, Input, Select, Button, DataTable, Label, TabbedContent, TabPane
+from textual.widgets import Header, Footer, Input, Select, Button, DataTable, Label
 from textual.screen import Screen
 from textual import work
 from textual.message import Message
@@ -113,11 +113,14 @@ class TorrentCrawlerApp(App):
         height: 100%;
         width: 1fr;
     }
-    #movie-table {
-        height: 1fr;
+    #tables-container {
+        width: 1fr;
+        height: 100%;
     }
-    #subtitle-table {
-        height: 1fr;
+    #movie-table, #subtitle-table {
+        height: 100%;
+        width: 1fr;
+        margin: 0 1;
     }
     #detail-container {
         padding: 2;
@@ -173,11 +176,9 @@ class TorrentCrawlerApp(App):
                 yield Button("Search", id="btn_search", variant="primary")
             
             with Vertical(id="main-content"):
-                with TabbedContent(initial="movies_tab"):
-                    with TabPane("Movies", id="movies_tab"):
-                        yield DataTable(id="movie-table")
-                    with TabPane("Subtitles", id="subs_tab"):
-                        yield DataTable(id="subtitle-table")
+                with Horizontal(id="tables-container"):
+                    yield DataTable(id="movie-table")
+                    yield DataTable(id="subtitle-table")
                 
         yield Footer()
 
@@ -218,58 +219,11 @@ class TorrentCrawlerApp(App):
         
         self.notify("Searching... Please wait", timeout=3)
         self.run_search(query)
-        self.run_search_subtitles(term)
 
     class MoviesFetched(Message):
         def __init__(self, movies: list):
             self.movies = movies
             super().__init__()
-
-    class IndependentSubtitlesFetched(Message):
-        def __init__(self, subtitles: dict):
-            self.subtitles = subtitles
-            super().__init__()
-
-    @work(thread=True)
-    def run_search_subtitles(self, term: str) -> None:
-        import urllib.parse
-        try:
-            url = SubtitleService.get_search_url(urllib.parse.quote(term), 1)
-            # The subtitle service crawl_movie takes an IMDB/movie URL normally.
-            # But here we would need a list of movies first to pick a subtitle, or directly use crawl_list.
-            # However `crawl_list` in SubtitleService doesn't return anything.
-            # Let's write a simple crawler for search results here:
-            from curl_cffi import requests
-            from bs4 import BeautifulSoup
-            req = requests.get(url, impersonate="chrome")
-            soup = BeautifulSoup(req.text, features='html5lib')
-            media_list = soup.find_all('li', {'class': 'media-movie-clickable'})
-            results = {}
-            for media in media_list:
-                media_body = media.find('div', {'class': 'media-body'})
-                media_link = media_body.find('a').get('href')
-                media_name = media.find('h3', {'class': 'media-heading'}).text
-                full_link = f"https://yifysubtitles.ch{media_link}"
-                results[media_name] = full_link
-            self.post_message(self.IndependentSubtitlesFetched(results))
-        except Exception:
-            self.post_message(self.IndependentSubtitlesFetched({}))
-
-    def on_torrent_crawler_app_independent_subtitles_fetched(self, message: IndependentSubtitlesFetched) -> None:
-        self.movies = [] # Clear movies focus
-        table = self.query_one("#subtitle-table", DataTable)
-        
-        if not message.subtitles:
-            self.notify("No subtitle results found.", severity="error")
-            return
-            
-        self.independent_sub_links = {}
-        for i, (name, link) in enumerate(message.subtitles.items()):
-            table.add_row(name, "[blue]Click to fetch[/blue]", key=f"sub_{i}")
-            self.independent_sub_links[f"sub_{i}"] = {"name": name, "url": link}
-        
-        self.notify(f"Found {len(message.subtitles)} subtitle pages.", severity="information")
-        table.focus()
 
     @work(thread=True)
     def run_search(self, query: SearchQuery) -> None:
@@ -280,18 +234,24 @@ class TorrentCrawlerApp(App):
 
     def on_torrent_crawler_app_movies_fetched(self, message: MoviesFetched) -> None:
         self.movies = message.movies
-        table = self.query_one("#movie-table", DataTable)
+        table_movies = self.query_one("#movie-table", DataTable)
+        table_subs = self.query_one("#subtitle-table", DataTable)
         
         if not self.movies:
             self.notify("No movies found.", severity="error")
             return
             
+        self.independent_sub_links = {}
         for i, m in enumerate(self.movies):
             links = ", ".join(m.raw_torrents.keys()) if hasattr(m, 'raw_torrents') else ""
-            table.add_row(m.name, str(m.year), m.ratings.imdb if hasattr(m, 'ratings') else "", links, key=str(i))
+            table_movies.add_row(m.name, str(m.year), m.ratings.imdb if hasattr(m, 'ratings') else "", links, key=str(i))
+            
+            if hasattr(m, 'subtitle_url') and m.subtitle_url:
+                table_subs.add_row(m.name, "[blue]Click to fetch subtitles[/blue]", key=f"sub_{i}")
+                self.independent_sub_links[f"sub_{i}"] = {"name": m.name, "url": m.subtitle_url}
         
         self.notify(f"Found {len(self.movies)} movies.", severity="information")
-        table.focus()
+        table_movies.focus()
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         if event.data_table.id == "movie-table":
