@@ -182,9 +182,9 @@ class TorrentCrawlerApp(App):
             
             with Vertical(id="main-content"):
                 with Vertical(id="tables-container"):
-                    yield Label("🎬 Movies", classes="table-label")
+                    yield Label("Movies", classes="table-label")
                     yield DataTable(id="movie-table")
-                    yield Label("📝 Subtitles", classes="table-label")
+                    yield Label("Subtitles", classes="table-label")
                     yield DataTable(id="subtitle-table")
                 
         yield Footer()
