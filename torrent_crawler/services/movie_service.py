@@ -78,35 +78,40 @@ class MovieService:
         return movies
 
     def crawl_movie(self, movie: Movie) -> Movie:
-        req = self.session.get(movie.link)
-        soup = BeautifulSoup(req.text, features='html5lib')
-        movie_info = soup.find('div', {'id': 'movie-info'})
-        if movie_info:
-            movie_torrents = movie_info.find('p', {'class': 'hidden-xs hidden-sm'}).find_all('a')
-            torrent_list = {}
-            for torrent in movie_torrents:
-                torrent_link = torrent.get('href')
-                torrent_quality = torrent.text
-                if torrent_link and torrent_quality and "Subtitle" not in torrent_quality:
-                    torrent_list[torrent_quality] = torrent_link
-            movie_ratings = movie_info.find('div', {'class': 'bottom-info'}).find_all('div', {'itemprop': 'aggregateRating'})
-            rating_list = {}
-            for rating in movie_ratings:
-                rating_link = rating.find('a')
-                if rating_link:
-                    rater = rating_link.get('title')
-                    rating_given_span = rating.find('span', {'itemprop': 'ratingValue'})
-                    if rater and rating_given_span:
-                        rating_list[rater] = rating_given_span.text
-            movie.set_torrents(torrent_list)
-            movie.raw_torrents = torrent_list
-            movie.set_ratings(rating_list)
-        elif self.should_print_to_console:
-            console.print(f"[red]{movie.name} got no info, not saving it[/red]")
-        movie_tech_specs = soup.find('div', {'id': 'movie-tech-specs'})
-        if movie_tech_specs:
-            tech_spec = movie_tech_specs.find('div', {'class': 'tech-spec-info'})
-            subtitle_url = tech_spec.find('a')
-            if subtitle_url:
-                movie.subtitle_url = subtitle_url.get('href')
+        try:
+            req = self.session.get(movie.link, timeout=10)
+            soup = BeautifulSoup(req.text, features='html5lib')
+            movie_info = soup.find('div', {'id': 'movie-info'})
+            if movie_info:
+                movie_torrents = movie_info.find('p', {'class': 'hidden-xs hidden-sm'}).find_all('a')
+                torrent_list = {}
+                for torrent in movie_torrents:
+                    torrent_link = torrent.get('href')
+                    torrent_quality = torrent.text
+                    if torrent_link and torrent_quality and "Subtitle" not in torrent_quality:
+                        torrent_list[torrent_quality] = torrent_link
+                movie_ratings = movie_info.find('div', {'class': 'bottom-info'}).find_all('div', {'itemprop': 'aggregateRating'})
+                rating_list = {}
+                for rating in movie_ratings:
+                    rating_link = rating.find('a')
+                    if rating_link:
+                        rater = rating_link.get('title')
+                        rating_given_span = rating.find('span', {'itemprop': 'ratingValue'})
+                        if rater and rating_given_span:
+                            rating_list[rater] = rating_given_span.text
+                movie.set_torrents(torrent_list)
+                movie.raw_torrents = torrent_list
+                movie.set_ratings(rating_list)
+            elif self.should_print_to_console:
+                console.print(f"[red]{movie.name} got no info, not saving it[/red]")
+            movie_tech_specs = soup.find('div', {'id': 'movie-tech-specs'})
+            if movie_tech_specs:
+                tech_spec = movie_tech_specs.find('div', {'class': 'tech-spec-info'})
+                if tech_spec:
+                    subtitle_url = tech_spec.find('a')
+                    if subtitle_url:
+                        movie.subtitle_url = subtitle_url.get('href')
+        except Exception as e:
+            if self.should_print_to_console:
+                console.print(f"[red]Failed to get details for {movie.name}: {e}[/red]")
         return movie
