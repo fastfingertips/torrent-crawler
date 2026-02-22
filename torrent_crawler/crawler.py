@@ -43,16 +43,23 @@ class Crawler:
                     print("\n[Hata] Sayfa icerigi okunamadi. Cloudflare engeline takilmis olabiliriz.")
                     print("Lutfen bir tarayicidan https://yts.bz adresine girip dogrulama yapmayi deneyin.")
                     return []
-                movies_count_text = browse_content.find('h2').text
+                h2_tag = browse_content.find('h2')
+                movies_count_text = h2_tag.text if h2_tag else ""
+                # print(f"DEBUG: h2 text: {movies_count_text}") # Debug print
+
                 movies_count_text = movies_count_text.replace(',', '')
-                match = re.search(r'(\d+) YIFY Movies found', movies_count_text)
+                match = re.search(r'(\d+)\s+.*found', movies_count_text, re.IGNORECASE)
                 if match:
                     movies_count = int(match.group(1))
                     print('Total {} movies found'.format(movies_count))
                 else:
                     movies_count = 0
-                    print('Count not found, continuing...')
+            
             movie_wraps = soup.find_all('div', {'class': 'browse-movie-wrap'})
+            if page_no == 1 and movies_count == 0:
+                movies_count = len(movie_wraps)
+                print(f'Total {movies_count} movies found on this page')
+
             if len(movie_wraps) < self.max_movies_in_page:
                 has_next_page = False
             for wrap in movie_wraps:
@@ -85,7 +92,7 @@ class Crawler:
             for torrent in movie_torrents:
                 torrent_link = torrent.get('href')
                 torrent_quality = torrent.text
-                if torrent_link and torrent_quality:
+                if torrent_link and torrent_quality and "Subtitle" not in torrent_quality:
                     torrent_list[torrent_quality] = torrent_link
             movie_ratings = movie_info.find('div', {'class': 'bottom-info'}).find_all('div', {'itemprop': 'aggregateRating'})
             rating_list = {}
