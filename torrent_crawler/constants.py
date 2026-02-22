@@ -1,63 +1,41 @@
+from torrent_crawler.config import settings
+
 class Constants:
     # movie search constants
-    input_types = ['genre', 'order', 'subtitle']
-    options = {
-        'quality': ['all', '720p', '1080p', '2160p', '3D'],
-        'genre': ['all', 'action', 'adventure', 'animation', 'biography', 'comedy', 'crime', 'documentary', 'drama',
-                  'family', 'fantasy', 'film-noir', 'game-show', 'history', 'horror', 'music', 'musical', 'mystery',
-                  'news', 'reality-tv', 'romance', 'sci-fi', 'sport', 'talk-show', 'thriller', 'war', 'western'],
-        'order': ['latest', 'oldest', 'seeds', 'peers', 'year', 'rating', 'likes', 'alphabetical', 'downloads']
-    }
-    list_url = 'https://yts.bz/browse-movies'
-    search_url = 'https://yts.bz/browse-movies/{0}/{1}/{2}/{3}/{4}/{5}/{6}'
+    input_types = settings.INPUT_TYPES
+    options = settings.OPTIONS
+    list_url = settings.URLS.list_url
+    search_url = settings.URLS.search_url
 
     # yts constants
-    rotten_tomatoes_critics_rating = 'Rotten Tomatoes Critics - Certified Fresh'
-    rotten_tomatoes_audience_rating = 'Rotten Tomatoes Audience - Upright'
-    imdb_rating = 'IMDb Rating'
-    blu_ray_3d = '3D.BluRay'
-    blu_ray_1080p = '1080p.BluRay'
-    blu_ray_720p = '720p.BluRay'
-    web_1080p = '1080p.WEB'
-    web_720p = '720p.WEB'
+    rotten_tomatoes_critics_rating = settings.RATINGS.rotten_tomatoes_critics_rating
+    rotten_tomatoes_audience_rating = settings.RATINGS.rotten_tomatoes_audience_rating
+    imdb_rating = settings.RATINGS.imdb_rating
+    blu_ray_3d = settings.QUALITIES.blu_ray_3d
+    blu_ray_1080p = settings.QUALITIES.blu_ray_1080p
+    blu_ray_720p = settings.QUALITIES.blu_ray_720p
+    web_1080p = settings.QUALITIES.web_1080p
+    web_720p = settings.QUALITIES.web_720p
 
     # subtitle search constants
-    subtitle_base_url = 'https://yifysubtitles.ch/{0}'
-    subtitle_search_url = 'https://yifysubtitles.ch/search?q={0}'
-    subtitle_movie_url = 'https://yifysubtitles.ch/movie-imdb/{0}'
+    subtitle_base_url = settings.URLS.subtitle_base_url
+    subtitle_search_url = settings.URLS.subtitle_search_url
+    subtitle_movie_url = settings.URLS.subtitle_movie_url
 
     # texts
-    search_string_text = 'Please enter search string: '
-    selection_text = {
-        'genre': 'Do you want to search some specific genre: ',
-        'order': 'Do you want any specific order by which movies should be sorted',
-        'subtitle': 'Download subtitles for this movie'
-    }
-    specific_text = {
-        'genre': 'Please enter any specific genre of your torrent: ',
-        'order': 'Select order by which movies should be sorted: ',
-        'subtitle': 'Select language to get subtitles: ',
-    }
-    specific_final_option = {
-        'genre': 'Movies would be crawled for only {0} genre',
-        'order': 'Movies would be downloaded by: {0}',
-    }
-    special_final_option = {
-        'genre': 'Movies would be crawled for all genre',
-        'order': 'Movies would be downloaded by IMDB rating'
-    }
-    choose_option_text = 'Choose an option: '
-    wrong_option_text = 'Wrong option, Try again'
-    movie_download_text = 'Enter movie to download: '
-    available_torrents_text = 'Available torrents: '
-    no_torrent_text = 'No torrents yet available for this movie'
-    movie_quality_text = 'Enter movie quality to download:'
-    click_link_text = 'Torrent link will open automatically, If not then Click this link: '
-    restart_search_text = 'Do you want to start searching again'
-    thanks_text = 'Thanks for using torrent-search . Keep Seeding'
-    download_zip_text = 'Subtitle would be downloaded in {0}{1}. Please check there.'
-    another_movies_text = 'Do you want to download another {0}{1} movie'
-
-
-if __name__ == '__main__':
-    pass
+    search_string_text = settings.TEXTS.search_string_text
+    selection_text = settings.TEXTS.selection_text
+    specific_text = settings.TEXTS.specific_text
+    specific_final_option = settings.TEXTS.specific_final_option
+    special_final_option = settings.TEXTS.special_final_option
+    choose_option_text = settings.TEXTS.choose_option_text
+    wrong_option_text = settings.TEXTS.wrong_option_text
+    movie_download_text = settings.TEXTS.movie_download_text
+    available_torrents_text = settings.TEXTS.available_torrents_text
+    no_torrent_text = settings.TEXTS.no_torrent_text
+    movie_quality_text = settings.TEXTS.movie_quality_text
+    click_link_text = settings.TEXTS.click_link_text
+    restart_search_text = settings.TEXTS.restart_search_text
+    thanks_text = settings.TEXTS.thanks_text
+    download_zip_text = settings.TEXTS.download_zip_text
+    another_movies_text = settings.TEXTS.another_movies_text
