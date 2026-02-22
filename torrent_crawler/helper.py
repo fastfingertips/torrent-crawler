@@ -6,7 +6,7 @@ import subprocess
 import zipfile
 import beaupy
 from torrent_crawler.constants import Constants
-from torrent_crawler.print import Print, console
+from torrent_crawler.print import Print, console, Color
 
 
 class Helper:

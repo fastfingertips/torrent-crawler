@@ -21,8 +21,8 @@ class SubtitleService:
             media_list = soup.find_all('li', {'class': 'media-movie-clickable'})
             for media in media_list:
                 media_body = media.find('div', {'class': 'media-body'})
-                media_link = media_body.find('a').get('href')
-                media_name = media.find('h3', {'class': 'media-heading'}).text
+                _media_link = media_body.find('a').get('href')
+                _media_name = media.find('h3', {'class': 'media-heading'}).text
 
     @staticmethod
     def crawl_movie(url):
