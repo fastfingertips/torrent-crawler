@@ -7,6 +7,7 @@ from textual.message import Message
 
 from torrent_crawler.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
+from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.helper import Helper
 from torrent_crawler.search import Search, SearchQuery
 
@@ -16,6 +17,11 @@ class MovieDetailScreen(Screen):
         super().__init__()
         self.movie = movie
         self.app_instance = app_instance
+
+    class SubtitlesFetched(Message):
+        def __init__(self, subtitles: dict):
+            self.subtitles = subtitles
+            super().__init__()
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -38,10 +44,9 @@ class MovieDetailScreen(Screen):
                     yield btn
             
             if self.movie.subtitle_url:
-                yield Label("\n[bold]Subtitles:[/bold]")
-                subtitle_btn = Button("Download Subtitles (Web)", id="btn_subs", variant="primary")
-                subtitle_btn.link = self.movie.subtitle_url
-                yield subtitle_btn
+                yield Label("\n[bold]Subtitles (Fetching...):[/bold]", id="sub-title-label")
+                yield DataTable(id="sub-table")
+                self.fetch_subtitles()
             
             yield Label("\n")
             yield Button("Back to Results", id="btn_back", variant="error")
@@ -57,7 +62,41 @@ class MovieDetailScreen(Screen):
         elif event.button.id == "btn_back":
             self.app.pop_screen()
 
+    @work(thread=True)
+    def fetch_subtitles(self) -> None:
+        try:
+            subtitles = SubtitleService.crawl_movie(self.movie.subtitle_url)
+            self.post_message(self.SubtitlesFetched(subtitles))
+        except Exception:
+            self.post_message(self.SubtitlesFetched({}))
 
+    def on_movie_detail_screen_subtitles_fetched(self, message: SubtitlesFetched) -> None:
+        table = self.query_one("#sub-table", DataTable)
+        label = self.query_one("#sub-title-label", Label)
+        
+        if not message.subtitles:
+            label.update("\n[bold]Subtitles:[/bold] [red]No subtitles found[/red]")
+            table.display = False
+            return
+            
+        label.update("\n[bold]Subtitles:[/bold]")
+        table.add_columns("Language", "Rating")
+        table.cursor_type = "row"
+        self.subtitle_links = {}
+        
+        row_id = 0
+        for lang, subs in message.subtitles.items():
+            for sub in subs:
+                table.add_row(lang, sub.get('rating', ''), key=str(row_id))
+                self.subtitle_links[str(row_id)] = sub.get('link')
+                row_id += 1
+
+    def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
+        if event.data_table.id == "sub-table":
+            link = self.subtitle_links.get(event.row_key.value)
+            if link:
+                Helper.download_srt(link)
+                self.app.notify(f"Downloading subtitle ZIP: {link}")
 class TorrentCrawlerApp(App):
     CSS = """
     #sidebar {
@@ -90,6 +129,10 @@ class TorrentCrawlerApp(App):
     MovieDetailScreen Button {
         margin: 1;
         width: 100%;
+    }
+    #sub-table {
+        margin: 1;
+        height: auto;
     }
     """
     
@@ -182,9 +225,10 @@ class TorrentCrawlerApp(App):
         table.focus()
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
-        idx = int(event.row_key.value)
-        movie = self.movies[idx]
-        self.push_screen(MovieDetailScreen(movie, self))
+        if event.data_table.id == "movie-table":
+            idx = int(event.row_key.value)
+            movie = self.movies[idx]
+            self.push_screen(MovieDetailScreen(movie, self))
 
 if __name__ == "__main__":
     app = TorrentCrawlerApp()
