@@ -4,6 +4,7 @@ from curl_cffi import requests
 import sys
 import subprocess
 import zipfile
+import beaupy
 from torrent_crawler.color import Color
 from torrent_crawler.constants import Constants
 from torrent_crawler.print import Print
@@ -12,14 +13,7 @@ from torrent_crawler.print import Print
 class Helper:
     @staticmethod
     def ask_for_options() -> bool:
-        while True:
-            want = input(Color.get_yes_no())
-            if want in ['y', 'Y']:
-                return True
-            if want in ['n', 'N']:
-                return False
-            Print.wrong_option()
-            continue
+        return beaupy.confirm("Proceed?")
 
     @staticmethod
     def take_int_input(no_of_options) -> int:
@@ -38,17 +32,18 @@ class Helper:
         return index
 
     @staticmethod
-    def take_input(input_type, options) -> int:
+    def take_input(input_type, options) -> str:
         if input_type not in Constants.input_types:
             Print.bold_string('Wrong input type: {0}'.format(input_type))
             exit(1)
         specific_text = Constants.specific_text[input_type]
-        no_of_options = len(options)
         Print.bold_string(specific_text)
-        for i in range(1, len(options)):
-            Print.option(i, options[i])
-        index = Helper.take_int_input(no_of_options)
-        return options[index]
+        
+        # Use beaupy to select from options
+        selected = beaupy.select(options, cursor=">", cursor_style="cyan")
+        if not selected:
+            exit(0) # User cancelled with Esc
+        return selected
 
     @staticmethod
     def take_optional_input(input_type):
@@ -56,18 +51,20 @@ class Helper:
         if input_type not in Constants.input_types:
             Print.bold_string('Wrong input type: {0}'.format(input_type))
             exit(1)
+        
         selection_text = Constants.selection_text[input_type]
-        specific_final_option = Constants.specific_final_option[input_type]
         special_final_option = Constants.special_final_option[input_type]
-        Print.bold_string(selection_text)
-        want = Helper.ask_for_options()
+        specific_final_option = Constants.specific_final_option[input_type]
+        
         options = Constants.options[input_type]
-        if not want:
-            Print.colored_note(special_final_option)
-            return options[0]
-        final_option = Helper.take_input(input_type, options)
-        Print.colored_note(specific_final_option.format(final_option))
-        return final_option
+        
+        if beaupy.confirm(selection_text):
+            final_option = Helper.take_input(input_type, options)
+            Print.colored_note(specific_final_option.format(final_option))
+            return final_option
+        
+        Print.colored_note(special_final_option)
+        return options[0]
 
     @staticmethod
     def update_progress(index, total):

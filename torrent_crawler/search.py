@@ -1,5 +1,6 @@
 import signal
 import traceback
+import beaupy
 from typing import Dict, List
 from torrent_crawler.constants import Constants
 from torrent_crawler.color import Color
@@ -55,15 +56,17 @@ class Search:
     MoviesList = List[Movie]
 
     def show_movies(self, movies: MoviesList):
-        print('Movies List: ')
-        for ind, movie in enumerate(movies):
-            print('{0}{1}: {2} ({3}){4}'.format(
-                Color.PURPLE, ind + 1, movie.name, movie.year, Color.END))
-        mid = Helper.take_int_input(len(movies))
+        Print.bold_string('Select a movie: ')
+        choices = ['{}: {} ({})'.format(ind + 1, movie.name, movie.year) for ind, movie in enumerate(movies)]
+        selected_choice = beaupy.select(choices, cursor=">", cursor_style="cyan")
+        
+        if not selected_choice:
+            return
+
+        mid = int(selected_choice.split(':')[0])
         movie_selected = movies[mid - 1]
         Print.bold_string(Constants.available_torrents_text)
 
-        # Try to use raw torrents if available, fallback to filtered torrents
         if hasattr(movie_selected, 'raw_torrents'):
             available_torrents = movie_selected.raw_torrents
         else:
@@ -72,37 +75,30 @@ class Search:
         if len(available_torrents) == 0:
             print('{0}{1}{2}'.format(Color.RED, Constants.no_torrent_text, Color.END))
         else:
-            ati = 1
             available_keys = list(available_torrents.keys())
-            for torrent_format in available_keys:
-                print('{0}{1}: {2}{3}'.format(Color.YELLOW, ati, torrent_format, Color.END))
-                ati += 1
             if len(available_torrents) == 1:
-                op = input('Press 1 to Download, Press any other key to exit\n')
-                if op == '1':
-                    torrent_link = list(available_torrents.values())[0]
+                if beaupy.confirm("Download {}?".format(available_keys[0])):
+                    torrent_link = available_torrents[available_keys[0]]
+                    Helper.open_magnet_link(torrent_link)
                     Print.bold_string('{0}{1}{2}{3}'.format(
                         Constants.click_link_text, Color.RED, torrent_link, Color.END))
-                else: exit(1)
             else:
-                # Print.bold_string(Constants.movie_quality_text)
-                qu = Helper.take_int_input(len(available_torrents.values()))
-                torrent_link = list(available_torrents.values())[qu - 1]
-                Helper.open_magnet_link(torrent_link)
-                Print.bold_string('{0}{1}{2}{3}'.format(
-                    Constants.click_link_text, Color.RED, torrent_link, Color.END))
+                Print.bold_string("Select quality:")
+                selected_quality = beaupy.select(available_keys, cursor=">", cursor_style="cyan")
+                if selected_quality:
+                    torrent_link = available_torrents[selected_quality]
+                    Helper.open_magnet_link(torrent_link)
+                    Print.bold_string('{0}{1}{2}{3}'.format(
+                        Constants.click_link_text, Color.RED, torrent_link, Color.END))
+
             Print.long_hash()
             if movie_selected.subtitle_url and movie_selected.subtitle_url != '':
-                Print.bold_string(Constants.selection_text['subtitle'])
-                download_subtitle = Helper.ask_for_options()
-                if download_subtitle:
+                if beaupy.confirm(Constants.selection_text['subtitle']):
                     subtitle = SubtitleService()
                     subtitle.search_subtitle(movie_selected.subtitle_url)
                 Print.long_hash()
-            print(Constants.another_movies_text.format(
-                Color.RED, Color.get_bold_string(self.search_query.search_term)))
-            reshow_movies = input(Color.get_yes_no())
-            if reshow_movies == 'y' or reshow_movies == 'Y':
+            
+            if beaupy.confirm(Constants.another_movies_text.format("", self.search_query.search_term)):
                 self.show_movies(movies)
 
     def start(self, search_query: SearchQuery):
@@ -112,9 +108,7 @@ class Search:
         if self.api_flag is True:
             return movies
         self.show_movies(movies)
-        print(Constants.restart_search_text)
-        restart_search = input('{0}\n'.format(Color.get_colored_yes()))
-        if restart_search == 'y' or restart_search == 'Y':
+        if beaupy.confirm(Constants.restart_search_text):
             main()
         else:
             print('{0}{1}{2}'.format(Color.BLUE, Constants.thanks_text, Color.END))
