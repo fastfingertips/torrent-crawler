@@ -127,18 +127,9 @@ class SearchInput:
 
 
 def main():
-    welcome_text = "[bold cyan]Torrent Crawler[/bold cyan]\n[dim]Search and download movie torrents effortlessly[/dim]"
-    console.print(Panel(welcome_text, border_style="cyan", expand=False))
-
-    console.print()
-    try:
-        search_query = SearchInput.create_query()
-        # search_query = SearchQuery('avengers', 'all', 'all', 0, 'latest', 0, 'all')
-        search = Search(search_query)
-        search.start(search_query)
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+    from torrent_crawler.tui import TorrentCrawlerApp
+    app = TorrentCrawlerApp()
+    app.run()
 
 
 if __name__ == '__main__':
