@@ -5,13 +5,9 @@ from torrent_crawler.constants import Constants
 
 class Ratings:
     def __init__(self, ratings):
-        self.rotten_tomatoes_critics, self.rotten_tomatoes_audience, self.imdb = ['']*3
-        if Constants.rotten_tomatoes_critics_rating in ratings:
-            self.rotten_tomatoes_critics = ratings[Constants.rotten_tomatoes_critics_rating]
-        if Constants.rotten_tomatoes_audience_rating in ratings:
-            self.rotten_tomatoes_audience = ratings[Constants.rotten_tomatoes_audience_rating]
-        if Constants.imdb_rating in ratings:
-            self.imdb = ratings[Constants.imdb_rating]
+        self.rotten_tomatoes_critics = ratings.get(Constants.rotten_tomatoes_critics_rating, '')
+        self.rotten_tomatoes_audience = ratings.get(Constants.rotten_tomatoes_audience_rating, '')
+        self.imdb = ratings.get(Constants.imdb_rating, '')
 
 
 class Torrents:

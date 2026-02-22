@@ -72,23 +72,21 @@ class Search:
             available_torrents = self.get_available_torrents(movie_selected.torrents)
 
         if len(available_torrents) == 0:
-            print('{0}{1}{2}'.format(Color.RED, Constants.no_torrent_text, Color.END))
+            console.print(f"[red]{Constants.no_torrent_text}[/red]")
         else:
             available_keys = list(available_torrents.keys())
             if len(available_torrents) == 1:
                 if beaupy.confirm("Download {}?".format(available_keys[0])):
                     torrent_link = available_torrents[available_keys[0]]
                     Helper.open_magnet_link(torrent_link)
-                    Print.bold_string('{0}{1}{2}{3}'.format(
-                        Constants.click_link_text, Color.RED, torrent_link, Color.END))
+                    console.print(f"{Constants.click_link_text} [red]{torrent_link}[/red]")
             else:
                 Print.bold_string("Select quality:")
                 selected_quality = beaupy.select(available_keys, cursor=">", cursor_style="cyan")
                 if selected_quality:
                     torrent_link = available_torrents[selected_quality]
                     Helper.open_magnet_link(torrent_link)
-                    Print.bold_string('{0}{1}{2}{3}'.format(
-                        Constants.click_link_text, Color.RED, torrent_link, Color.END))
+                    console.print(f"{Constants.click_link_text} [red]{torrent_link}[/red]")
 
             Print.long_hash()
             if movie_selected.subtitle_url and movie_selected.subtitle_url != '':

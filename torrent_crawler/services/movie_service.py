@@ -5,6 +5,7 @@ from typing import List
 from torrent_crawler.constants import Constants
 from torrent_crawler.helper import Helper
 from torrent_crawler.models import Movie
+from torrent_crawler.print import Print, console
 
 MoviesList = List[Movie]
 
@@ -36,8 +37,8 @@ class MovieService:
             if page_no == 1:
                 browse_content = soup.find('div', {'class': 'browse-content'})
                 if not browse_content or not browse_content.find('h2'):
-                    print("\n[Hata] Sayfa icerigi okunamadi. Cloudflare engeline takilmis olabiliriz.")
-                    print("Lutfen bir tarayicidan https://yts.bz adresine girip dogrulama yapmayi deneyin.")
+                    console.print("\n[red][Hata][/red] Sayfa icerigi okunamadi. Cloudflare engeline takilmis olabiliriz.")
+                    console.print("Lutfen bir tarayicidan https://yts.bz adresine girip dogrulama yapmayi deneyin.")
                     return []
                 h2_tag = browse_content.find('h2')
                 movies_count_text = h2_tag.text if h2_tag else ""
@@ -46,7 +47,7 @@ class MovieService:
                 match = re.search(r'(\d+)\s+.*found', movies_count_text, re.IGNORECASE)
                 if match:
                     movies_count = int(match.group(1))
-                    print('Total {} movies found'.format(movies_count))
+                    console.print(f'Total [green]{movies_count}[/green] movies found')
                 else:
                     movies_count = 0
             
@@ -54,7 +55,7 @@ class MovieService:
             if page_no == 1 and movies_count == 0:
                 movies_count = len(movie_wraps)
                 if movies_count > 0:
-                    print(f'Total {movies_count} movies found')
+                    console.print(f'Total [green]{movies_count}[/green] movies found')
 
             if len(movie_wraps) < self.max_movies_in_page:
                 has_next_page = False
@@ -67,7 +68,7 @@ class MovieService:
                 movie = self.crawl_movie(movie)
                 movies.append(movie)
                 if self.should_print_to_console:
-                    print('{}: {}'.format(current_movie_count, movie_name))
+                    console.print(f'[yellow]{current_movie_count}:[/yellow] {movie_name}')
                 if self.should_save_list:
                     movie.save_list()
                 if self.update_progress:
@@ -101,7 +102,7 @@ class MovieService:
             movie.raw_torrents = torrent_list
             movie.set_ratings(rating_list)
         elif self.should_print_to_console:
-            print("{} got no info, not saving it".format(movie.name))
+            console.print(f"[red]{movie.name} got no info, not saving it[/red]")
         movie_tech_specs = soup.find('div', {'id': 'movie-tech-specs'})
         if movie_tech_specs:
             tech_spec = movie_tech_specs.find('div', {'class': 'tech-spec-info'})
