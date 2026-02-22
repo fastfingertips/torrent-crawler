@@ -49,7 +49,7 @@ class Search:
         if self.search_query.quality in ['all', '720'] and torrents.web720:
             available_torrents['720p.WEB'] = torrents.web720
         if self.search_query.quality in ['all', '1080'] and torrents.web1080:
-            available_torrents['1080p.WEB'] = torrents.br1080
+            available_torrents['1080p.WEB'] = torrents.web1080
         return available_torrents
 
     MoviesList = List[Movie]
@@ -63,12 +63,18 @@ class Search:
         movie_selected = movies[mid - 1]
         Print.bold_string(Constants.available_torrents_text)
 
-        available_torrents = self.get_available_torrents(movie_selected.torrents)
-        if len(available_torrents.values()) == 0:
+        # Try to use raw torrents if available, fallback to filtered torrents
+        if hasattr(movie_selected, 'raw_torrents'):
+            available_torrents = movie_selected.raw_torrents
+        else:
+            available_torrents = self.get_available_torrents(movie_selected.torrents)
+
+        if len(available_torrents) == 0:
             print('{0}{1}{2}'.format(Color.RED, Constants.no_torrent_text, Color.END))
         else:
             ati = 1
-            for torrent_format in list(available_torrents):
+            available_keys = list(available_torrents.keys())
+            for torrent_format in available_keys:
                 print('{0}{1}: {2}{3}'.format(Color.YELLOW, ati, torrent_format, Color.END))
                 ati += 1
             if len(available_torrents) == 1:

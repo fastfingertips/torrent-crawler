@@ -97,7 +97,10 @@ class Crawler:
                     rating_given = rating.find('span', {'itemprop': 'ratingValue'}).text
                     if rater and rating_given:
                         rating_list[rater] = rating_given
+            # DEBUG: Print raw torrents found
+            # print(f"DEBUG: Raw torrents for {movie.name}: {torrent_list}")
             movie.set_torrents(torrent_list)
+            movie.raw_torrents = torrent_list # Store raw torrents for verification
             movie.set_ratings(rating_list)
         elif self.should_print_to_console:
             print("{} got no info, not saving it".format(movie.name))
