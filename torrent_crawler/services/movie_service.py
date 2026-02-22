@@ -60,6 +60,9 @@ class MovieService:
             if len(movie_wraps) < self.max_movies_in_page:
                 has_next_page = False
             for wrap in movie_wraps:
+                if movies_count > 0 and current_movie_count > movies_count:
+                    has_next_page = False
+                    break
                 movie_link = wrap.find('a', {'class': 'browse-movie-link'}).get('href')
                 movie_details = wrap.find('div', {'class': 'browse-movie-bottom'})
                 movie_name = movie_details.find('a', {'class': 'browse-movie-title'}).text
