@@ -3,11 +3,11 @@ import traceback
 from typing import Dict, List
 from torrent_crawler.constants import Constants
 from torrent_crawler.color import Color
-from torrent_crawler.crawler import Crawler
+from torrent_crawler.services.movie_service import MovieService
+from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.helper import Helper
 from torrent_crawler.models import Movie, Torrents
 from torrent_crawler.print import Print
-from torrent_crawler.subtitle import Subtitle
 
 
 def sigint_handler(signum, frame):
@@ -96,7 +96,7 @@ class Search:
                 Print.bold_string(Constants.selection_text['subtitle'])
                 download_subtitle = Helper.ask_for_options()
                 if download_subtitle:
-                    subtitle = Subtitle()
+                    subtitle = SubtitleService()
                     subtitle.search_subtitle(movie_selected.subtitle_url)
                 Print.long_hash()
             print(Constants.another_movies_text.format(
@@ -107,7 +107,7 @@ class Search:
 
     def start(self, search_query: SearchQuery):
         url = search_query.get_url()
-        crawler = Crawler(api_flag=self.api_flag)
+        crawler = MovieService(api_flag=self.api_flag)
         movies = crawler.crawl_list(url)
         if self.api_flag is True:
             return movies
