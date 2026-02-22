@@ -8,9 +8,6 @@ class Print:
     def bold_string(string):
         console.print(f"[bold]{string}[/bold]")
 
-    @staticmethod
-    def long_hash():
-        console.print('###########################################')
 
     @staticmethod
     def wrong_option():

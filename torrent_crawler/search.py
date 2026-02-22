@@ -1,6 +1,7 @@
 import signal
 import traceback
 import beaupy
+from rich.panel import Panel
 from typing import Dict, List
 from torrent_crawler.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
@@ -88,12 +89,12 @@ class Search:
                     Helper.open_magnet_link(torrent_link)
                     console.print(f"{Constants.click_link_text} [red]{torrent_link}[/red]")
 
-            Print.long_hash()
+
             if movie_selected.subtitle_url and movie_selected.subtitle_url != '':
                 if beaupy.confirm(Constants.selection_text['subtitle']):
                     subtitle = SubtitleService()
                     subtitle.search_subtitle(movie_selected.subtitle_url)
-                Print.long_hash()
+
             
             if beaupy.confirm(Constants.another_movies_text.format("", self.search_query.search_term)):
                 self.show_movies(movies)
@@ -114,10 +115,9 @@ class Search:
 class SearchInput:
     @staticmethod
     def create_query() -> SearchQuery:
-        Print.long_hash()
-        s = input("Please enter search string: ")
+        s = console.input("[bold cyan]❯[/bold cyan] Please enter search string: ")
         while not s:
-            s = input("Please enter search string: ")
+            s = console.input("[bold cyan]❯[/bold cyan] Please enter search string: ")
 
         q = 'all'
         g = Helper.take_optional_input('genre')
@@ -127,22 +127,10 @@ class SearchInput:
 
 
 def main():
-    banner = """[dark_cyan]
-###########################################
+    welcome_text = "[bold cyan]Torrent Crawler[/bold cyan]\n[dim]Search and download movie torrents effortlessly[/dim]"
+    console.print(Panel(welcome_text, border_style="cyan", expand=False))
 
-#     #  ######  #       #  #  #####  #####
-# # # #  #    #   #     #   #  #      #    
-#  #  #  #    #    #   #    #  ###    #####
-#     #  #    #     # #     #  #          #
-#     #  ######      #      #  #####  #####
-
-###########################################
-###                                    ####
- Welcome to torrent search and downloader 
-###                                    ####
-###########################################[/dark_cyan]
-    """
-    console.print(banner)
+    console.print()
     try:
         search_query = SearchInput.create_query()
         # search_query = SearchQuery('avengers', 'all', 'all', 0, 'latest', 0, 'all')

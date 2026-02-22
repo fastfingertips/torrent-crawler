@@ -46,7 +46,6 @@ class Helper:
 
     @staticmethod
     def take_optional_input(input_type):
-        Print.long_hash()
         if input_type not in Constants.input_types:
             Print.bold_string('Wrong input type: {0}'.format(input_type))
             exit(1)
