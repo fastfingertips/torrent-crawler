@@ -1,7 +1,5 @@
 import signal
-import traceback
 import beaupy
-from rich.panel import Panel
 from typing import Dict, List
 from torrent_crawler.constants import Constants
 from torrent_crawler.services.movie_service import MovieService

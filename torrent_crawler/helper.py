@@ -6,7 +6,7 @@ import subprocess
 import zipfile
 import beaupy
 from torrent_crawler.constants import Constants
-from torrent_crawler.print import Print, console, Color
+from torrent_crawler.print import Print, console
 
 
 class Helper:
@@ -19,7 +19,7 @@ class Helper:
         index = None
         while True:
             try:
-                index = int(input(Color.get_bold_string(Constants.choose_option_text)))
+                index = int(console.input(f"[bold]{Constants.choose_option_text}[/bold]"))
                 if 1 <= index <= no_of_options:
                     break
                 else:
@@ -122,7 +122,7 @@ class Helper:
         """Downloads and extracts .srt file from zip url"""
         my_zip = Helper.__get_zip_file(url)
         storage_path = Helper.__get_downloads_folder()
-        Print.bold_string(Constants.download_zip_text.format(Color.RED, storage_path, url))
+        Print.bold_string(Constants.download_zip_text.format("", storage_path))
         for file in my_zip.namelist():
             if my_zip.getinfo(file).filename.endswith('.srt'):
                 my_zip.extract(file, storage_path)  # extract the file to current folder if it is a text file
