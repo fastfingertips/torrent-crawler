@@ -53,7 +53,8 @@ class MovieService:
             movie_wraps = soup.find_all('div', {'class': 'browse-movie-wrap'})
             if page_no == 1 and movies_count == 0:
                 movies_count = len(movie_wraps)
-                print(f'Total {movies_count} movies found on this page')
+                if movies_count > 0:
+                    print(f'Total {movies_count} movies found')
 
             if len(movie_wraps) < self.max_movies_in_page:
                 has_next_page = False

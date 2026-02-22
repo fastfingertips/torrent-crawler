@@ -22,9 +22,9 @@ class Constants:
     web_720p = '720p.WEB'
 
     # subtitle search constants
-    subtitle_base_url = 'http://www.yifysubtitles.org/{0}'
-    subtitle_search_url = 'http://www.yifysubtitles.org/search?q={0}'
-    subtitle_movie_url = 'http://www.yifysubtitles.org/movie-imdb/{0}'
+    subtitle_base_url = 'https://yifysubtitles.ch/{0}'
+    subtitle_search_url = 'https://yifysubtitles.ch/search?q={0}'
+    subtitle_movie_url = 'https://yifysubtitles.ch/movie-imdb/{0}'
 
     # texts
     search_string_text = 'Please enter search string: '
