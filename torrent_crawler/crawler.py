@@ -2,7 +2,7 @@
 
 from bs4 import BeautifulSoup
 import re
-import requests
+from curl_cffi import requests
 from typing import List
 from torrent_crawler.constants import Constants
 from torrent_crawler.helper import Helper
@@ -22,6 +22,7 @@ class Crawler:
         self.should_print_to_console = print_console or False
         self.max_movies_in_page = 20
         self.update_progress = False if api_flag is True else True
+        self.session = requests.Session(impersonate="chrome")
 
     def crawl_list(self, crawl_url: str) -> MoviesList:
         page_no = 1
@@ -34,14 +35,23 @@ class Crawler:
             request_url = crawl_url
             if page_no > 1:
                 request_url = '{0}?page={1}'.format(crawl_url, page_no)
-            req = requests.get(request_url)
+            req = self.session.get(request_url)
             soup = BeautifulSoup(req.text, features='html5lib')
             if page_no == 1:
-                movies_count_text = soup.find('div', {'class': 'browse-content'}).find('h2').text
+                browse_content = soup.find('div', {'class': 'browse-content'})
+                if not browse_content or not browse_content.find('h2'):
+                    print("\n[Hata] Sayfa icerigi okunamadi. Cloudflare engeline takilmis olabiliriz.")
+                    print("Lutfen bir tarayicidan https://yts.bz adresine girip dogrulama yapmayi deneyin.")
+                    return []
+                movies_count_text = browse_content.find('h2').text
                 movies_count_text = movies_count_text.replace(',', '')
-                movies_count = re.match(r'(\d+) YIFY Movies found', movies_count_text).group(1)
-                movies_count = int(movies_count)
-                print('Total {} movies found'.format(movies_count))
+                match = re.search(r'(\d+) YIFY Movies found', movies_count_text)
+                if match:
+                    movies_count = int(match.group(1))
+                    print('Total {} movies found'.format(movies_count))
+                else:
+                    movies_count = 0
+                    print('Count not found, continuing...')
             movie_wraps = soup.find_all('div', {'class': 'browse-movie-wrap'})
             if len(movie_wraps) < self.max_movies_in_page:
                 has_next_page = False
@@ -65,7 +75,7 @@ class Crawler:
         return movies
 
     def crawl_movie(self, movie: Movie) -> Movie:
-        req = requests.get(movie.link)
+        req = self.session.get(movie.link)
         soup = BeautifulSoup(req.text, features='html5lib')
         movie_info = soup.find('div', {'id': 'movie-info'})
         if movie_info:

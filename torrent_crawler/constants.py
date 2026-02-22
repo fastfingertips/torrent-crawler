@@ -8,8 +8,8 @@ class Constants:
                   'news', 'reality-tv', 'romance', 'sci-fi', 'sport', 'talk-show', 'thriller', 'war', 'western'],
         'order': ['latest', 'oldest', 'seeds', 'peers', 'year', 'rating', 'likes', 'alphabetical', 'downloads']
     }
-    list_url = 'https://yts.mx/browse-movies'
-    search_url = 'https://yts.mx/browse-movies/{0}/{1}/{2}/{3}/{4}/{5}/{6}'
+    list_url = 'https://yts.bz/browse-movies'
+    search_url = 'https://yts.bz/browse-movies/{0}/{1}/{2}/{3}/{4}/{5}/{6}'
 
     # yts constants
     rotten_tomatoes_critics_rating = 'Rotten Tomatoes Critics - Certified Fresh'

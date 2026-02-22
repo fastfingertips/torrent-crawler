@@ -1,6 +1,6 @@
 import io
 import os
-import requests
+from curl_cffi import requests
 import sys
 import subprocess
 import zipfile
@@ -74,7 +74,10 @@ class Helper:
         """Show update progress for index out of total"""
         bar_length = 30
         status = ""
-        progress = index / total
+        if total == 0:
+            progress = 0
+        else:
+            progress = index / total
         if isinstance(progress, int):
             progress = float(progress)
         if not isinstance(progress, float):
@@ -117,7 +120,7 @@ class Helper:
     @staticmethod
     def __get_zip_file(url):
         """Downloads zipped files from url"""
-        r = requests.get(url)
+        r = requests.get(url, impersonate="chrome")
         return zipfile.ZipFile(io.BytesIO(r.content))
 
     @staticmethod

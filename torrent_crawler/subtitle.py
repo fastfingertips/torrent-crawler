@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import requests
+from curl_cffi import requests
 from torrent_crawler.constants import Constants
 from torrent_crawler.helper import Helper
 
@@ -17,7 +17,7 @@ class Subtitle:
         has_next_page = True
         while has_next_page:
             url = self.get_search_url(search_term, page_no)
-            req = requests.get(url)
+            req = requests.get(url, impersonate="chrome")
             soup = BeautifulSoup(req.text, features='html5lib')
             media_list = soup.find_all('li', {'class': 'media-movie-clickable'})
             for media in media_list:
@@ -27,7 +27,7 @@ class Subtitle:
 
     @staticmethod
     def crawl_movie(url):
-        req = requests.get(url)
+        req = requests.get(url, impersonate="chrome")
         soup = BeautifulSoup(req.text, features='html5lib')
         subtitle_table = soup.find('table', {'class': 'other-subs'}).find('tbody').find_all('tr')
         subtitles = {}
