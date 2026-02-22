@@ -5,7 +5,9 @@ from typing import List
 from torrent_crawler.constants import Constants
 from torrent_crawler.helper import Helper
 from torrent_crawler.models import Movie
-from torrent_crawler.print import console
+from rich.console import Console
+
+console = Console()
 
 MoviesList = List[Movie]
 

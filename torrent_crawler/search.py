@@ -6,11 +6,12 @@ from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.helper import Helper
 from torrent_crawler.models import Movie, Torrents
-from torrent_crawler.print import Print, console
+from rich.console import Console
+console = Console()
 
 
 def sigint_handler(signum, frame):
-    Print.thanks()
+    console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
     exit(1)
 
 
@@ -54,7 +55,7 @@ class Search:
     MoviesList = List[Movie]
 
     def show_movies(self, movies: MoviesList):
-        Print.bold_string('Select a movie: ')
+        console.print("[bold]Select a movie: [/bold]")
         choices = ['{}: {} ({})'.format(ind + 1, movie.name, movie.year) for ind, movie in enumerate(movies)]
         selected_choice = beaupy.select(choices, cursor=">", cursor_style="cyan")
         
@@ -63,7 +64,7 @@ class Search:
 
         mid = int(selected_choice.split(':')[0])
         movie_selected = movies[mid - 1]
-        Print.bold_string(Constants.available_torrents_text)
+        console.print(f"[bold]{Constants.available_torrents_text}[/bold]")
 
         if hasattr(movie_selected, 'raw_torrents'):
             available_torrents = movie_selected.raw_torrents
@@ -80,7 +81,7 @@ class Search:
                     Helper.open_magnet_link(torrent_link)
                     console.print(f"{Constants.click_link_text} [red]{torrent_link}[/red]")
             else:
-                Print.bold_string("Select quality:")
+                console.print("[bold]Select quality:[/bold]")
                 selected_quality = beaupy.select(available_keys, cursor=">", cursor_style="cyan")
                 if selected_quality:
                     torrent_link = available_torrents[selected_quality]
@@ -107,7 +108,7 @@ class Search:
         if beaupy.confirm(Constants.restart_search_text):
             main()
         else:
-            Print.thanks()
+            console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
 
 
 class SearchInput:

@@ -6,7 +6,9 @@ import subprocess
 import zipfile
 import beaupy
 from torrent_crawler.constants import Constants
-from torrent_crawler.print import Print, console
+from rich.console import Console
+
+console = Console()
 
 
 class Helper:
@@ -23,20 +25,20 @@ class Helper:
                 if 1 <= index <= no_of_options:
                     break
                 else:
-                    Print.wrong_option()
+                    console.print(f"[red]{Constants.wrong_option_text}[/red]")
                     continue
             except ValueError:
-                Print.wrong_option()
+                console.print(f"[red]{Constants.wrong_option_text}[/red]")
                 continue
         return index
 
     @staticmethod
     def take_input(input_type, options) -> str:
         if input_type not in Constants.input_types:
-            Print.bold_string('Wrong input type: {0}'.format(input_type))
+            console.print(f"[bold]Wrong input type: {input_type}[/bold]")
             exit(1)
         specific_text = Constants.specific_text[input_type]
-        Print.bold_string(specific_text)
+        console.print(f"[bold]{specific_text}[/bold]")
         
         # Use beaupy to select from options
         selected = beaupy.select(options, cursor=">", cursor_style="cyan")
@@ -47,7 +49,7 @@ class Helper:
     @staticmethod
     def take_optional_input(input_type):
         if input_type not in Constants.input_types:
-            Print.bold_string('Wrong input type: {0}'.format(input_type))
+            console.print(f"[bold]Wrong input type: {input_type}[/bold]")
             exit(1)
         
         selection_text = Constants.selection_text[input_type]
@@ -58,10 +60,10 @@ class Helper:
         
         if beaupy.confirm(selection_text):
             final_option = Helper.take_input(input_type, options)
-            Print.colored_note(specific_final_option.format(final_option))
+            console.print(f"[blue]Note::[/blue] {specific_final_option.format(final_option)}")
             return final_option
         
-        Print.colored_note(special_final_option)
+        console.print(f"[blue]Note::[/blue] {special_final_option}")
         return options[0]
 
     @staticmethod
@@ -122,7 +124,7 @@ class Helper:
         """Downloads and extracts .srt file from zip url"""
         my_zip = Helper.__get_zip_file(url)
         storage_path = Helper.__get_downloads_folder()
-        Print.bold_string(Constants.download_zip_text.format("", storage_path))
+        console.print(f"[bold]{Constants.download_zip_text.format('', storage_path)}[/bold]")
         for file in my_zip.namelist():
             if my_zip.getinfo(file).filename.endswith('.srt'):
                 my_zip.extract(file, storage_path)  # extract the file to current folder if it is a text file
