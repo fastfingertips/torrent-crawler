@@ -95,6 +95,10 @@ class TorrentCrawlerApp(App):
     
     BINDINGS = [
         ("q", "quit", "Quit"),
+        ("down", "focus_next", "Next"),
+        ("up", "focus_previous", "Previous"),
+        ("right", "focus_next", "Next"),
+        ("left", "focus_previous", "Previous"),
     ]
 
     def on_mount(self):
