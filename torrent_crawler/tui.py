@@ -116,6 +116,10 @@ class TorrentCrawlerApp(App):
     #movie-table {
         height: 1fr;
     }
+    #subtitle-table {
+        height: 1fr;
+        display: none;
+    }
     #detail-container {
         padding: 2;
         align: center middle;
@@ -172,13 +176,19 @@ class TorrentCrawlerApp(App):
             
             with Vertical(id="main-content"):
                 yield DataTable(id="movie-table")
+                yield DataTable(id="subtitle-table")
                 
         yield Footer()
 
     def on_ready(self) -> None:
-        table = self.query_one(DataTable)
-        table.add_columns("Title", "Year", "IMDb", "Links")
-        table.cursor_type = "row"
+        table_movies = self.query_one("#movie-table", DataTable)
+        table_movies.add_columns("Title", "Year", "IMDb", "Links")
+        table_movies.cursor_type = "row"
+        
+        table_subs = self.query_one("#subtitle-table", DataTable)
+        table_subs.add_columns("Movie Title", "Subtitle Link")
+        table_subs.cursor_type = "row"
+        
         self.query_one("#input_term", Input).focus()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -201,7 +211,13 @@ class TorrentCrawlerApp(App):
         order = self.query_one("#select_order", Select).value
         
         query = SearchQuery(term, 'all', genre, 0, order, 0, 'all')
-        self.query_one(DataTable).clear()
+        
+        movie_table = self.query_one("#movie-table", DataTable)
+        sub_table = self.query_one("#subtitle-table", DataTable)
+        movie_table.display = True
+        sub_table.display = False
+        movie_table.clear()
+        
         self.notify("Searching... Please wait", timeout=3)
         self.run_search(query)
 
@@ -246,18 +262,23 @@ class TorrentCrawlerApp(App):
             self.notify("Please enter a search term for subtitles", severity="warning")
             return
             
-        self.query_one(DataTable).clear(columns=True)
+        movie_table = self.query_one("#movie-table", DataTable)
+        sub_table = self.query_one("#subtitle-table", DataTable)
+        movie_table.display = False
+        sub_table.display = True
+        sub_table.clear()
+        
         self.notify("Searching subtitles... Please wait", timeout=3)
         self.run_search_subtitles(term)
 
     def on_torrent_crawler_app_independent_subtitles_fetched(self, message: IndependentSubtitlesFetched) -> None:
         self.movies = [] # Clear movies focus
-        table = self.query_one(DataTable)
+        table = self.query_one("#subtitle-table", DataTable)
+        
         if not message.subtitles:
             self.notify("No subtitle results found.", severity="error")
             return
             
-        table.add_columns("Movie Title", "Subtitle Link")
         self.independent_sub_links = {}
         for i, (name, link) in enumerate(message.subtitles.items()):
             table.add_row(name, "[blue]Click to fetch[/blue]", key=f"sub_{i}")
@@ -275,9 +296,8 @@ class TorrentCrawlerApp(App):
 
     def on_torrent_crawler_app_movies_fetched(self, message: MoviesFetched) -> None:
         self.movies = message.movies
-        table = self.query_one(DataTable)
-        table.clear(columns=True)
-        table.add_columns("Title", "Year", "IMDb", "Links")
+        table = self.query_one("#movie-table", DataTable)
+        
         if not self.movies:
             self.notify("No movies found.", severity="error")
             return
@@ -292,16 +312,15 @@ class TorrentCrawlerApp(App):
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         if event.data_table.id == "movie-table":
             key = str(event.row_key.value)
-            # If it's a movies search result
             if key.isdigit() and self.movies:
                 idx = int(key)
                 movie = self.movies[idx]
                 self.push_screen(MovieDetailScreen(movie, self))
-            # If it's an independent subtitle search result
-            elif key.startswith("sub_") and hasattr(self, 'independent_sub_links'):
+        elif event.data_table.id == "subtitle-table":
+            key = str(event.row_key.value)
+            if key.startswith("sub_") and hasattr(self, 'independent_sub_links'):
                 sub_data = self.independent_sub_links.get(key)
                 if sub_data:
-                    # We can push a generic movie detail screen with just a name and sub URL
                     from torrent_crawler.models import Movie
                     dummy_movie = Movie(0, sub_data["name"], "", 0)
                     dummy_movie.subtitle_url = sub_data["url"]
