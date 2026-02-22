@@ -118,9 +118,14 @@ class TorrentCrawlerApp(App):
         height: 100%;
     }
     #movie-table, #subtitle-table {
-        height: 100%;
-        width: 1fr;
+        height: 1fr;
+        width: 100%;
         margin: 0 1;
+    }
+    .table-label {
+        margin: 1 0 0 1;
+        text-style: bold;
+        color: $accent;
     }
     #detail-container {
         padding: 2;
@@ -176,8 +181,10 @@ class TorrentCrawlerApp(App):
                 yield Button("Search", id="btn_search", variant="primary")
             
             with Vertical(id="main-content"):
-                with Horizontal(id="tables-container"):
+                with Vertical(id="tables-container"):
+                    yield Label("🎬 Movies", classes="table-label")
                     yield DataTable(id="movie-table")
+                    yield Label("📝 Subtitles", classes="table-label")
                     yield DataTable(id="subtitle-table")
                 
         yield Footer()
