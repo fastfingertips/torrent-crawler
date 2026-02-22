@@ -75,3 +75,18 @@ class Movie:
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+
+class SearchQuery:
+    def __init__(self, search_term, quality, genre, rating, order_by, year=0, language='en'):
+        self.search_term = search_term
+        self.quality = quality
+        self.genre = genre
+        self.rating = rating
+        self.order_by = order_by
+        self.language = language
+        self.year = year
+
+    def get_url(self):
+        return Constants.search_url.format(self.search_term, self.quality, self.genre,
+                                           self.rating, self.order_by, self.year, self.language)

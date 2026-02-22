@@ -5,7 +5,7 @@ from torrent_crawler.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.helper import Helper
-from torrent_crawler.models import Movie, Torrents
+from torrent_crawler.models import Movie, Torrents, SearchQuery
 from rich.console import Console
 console = Console()
 
@@ -18,19 +18,6 @@ def sigint_handler(signum, frame):
 signal.signal(signal.SIGINT, sigint_handler)
 
 
-class SearchQuery:
-    def __init__(self, search_term, quality, genre, rating, order_by, year=0, language='en'):
-        self.search_term = search_term
-        self.quality = quality
-        self.genre = genre
-        self.rating = rating
-        self.order_by = order_by
-        self.language = language
-        self.year = year
-
-    def get_url(self):
-        return Constants.search_url.format(self.search_term, self.quality, self.genre,
-                                           self.rating, self.order_by, self.year, self.language)
 
 
 class Search:
@@ -99,9 +86,8 @@ class Search:
                 self.show_movies(movies)
 
     def start(self, search_query: SearchQuery):
-        url = search_query.get_url()
         crawler = MovieService(api_flag=self.api_flag)
-        movies = crawler.crawl_list(url)
+        movies = crawler.crawl_list(search_query)
         if self.api_flag is True:
             return movies
         self.show_movies(movies)

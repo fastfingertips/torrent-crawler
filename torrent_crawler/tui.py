@@ -236,7 +236,7 @@ class TorrentCrawlerApp(App):
     def run_search(self, query: SearchQuery) -> None:
         # api_flag=True and print_console=False to ensure clean output without print mess
         service = MovieService(api_flag=True, print_console=False)
-        movies = service.crawl_list(query.get_url())
+        movies = service.crawl_list(query)
         self.post_message(self.MoviesFetched(movies))
 
     def on_torrent_crawler_app_movies_fetched(self, message: MoviesFetched) -> None:
