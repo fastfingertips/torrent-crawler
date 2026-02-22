@@ -1,6 +1,6 @@
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.widgets import Header, Footer, Input, Select, Button, DataTable, Label
+from textual.widgets import Header, Footer, Input, Select, Button, DataTable, Label, TabbedContent, TabPane
 from textual.screen import Screen
 from textual import work
 from textual.message import Message
@@ -118,7 +118,6 @@ class TorrentCrawlerApp(App):
     }
     #subtitle-table {
         height: 1fr;
-        display: none;
     }
     #detail-container {
         padding: 2;
@@ -138,7 +137,7 @@ class TorrentCrawlerApp(App):
         margin: 1;
         height: auto;
     }
-    #btn_search, #btn_search_sub {
+    #btn_search {
         width: 100%;
         margin-top: 1;
     }
@@ -171,12 +170,14 @@ class TorrentCrawlerApp(App):
                 order_options = [(o.title(), o) for o in Constants.options['order']]
                 yield Select(order_options, id="select_order", value="latest")
                 
-                yield Button("Search Movies", id="btn_search", variant="primary")
-                yield Button("Search Subtitles", id="btn_search_sub", variant="warning")
+                yield Button("Search", id="btn_search", variant="primary")
             
             with Vertical(id="main-content"):
-                yield DataTable(id="movie-table")
-                yield DataTable(id="subtitle-table")
+                with TabbedContent(initial="movies_tab"):
+                    with TabPane("Movies", id="movies_tab"):
+                        yield DataTable(id="movie-table")
+                    with TabPane("Subtitles", id="subs_tab"):
+                        yield DataTable(id="subtitle-table")
                 
         yield Footer()
 
@@ -194,8 +195,6 @@ class TorrentCrawlerApp(App):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn_search":
             self.action_search()
-        elif event.button.id == "btn_search_sub":
-            self.action_search_subtitles()
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         if event.input.id == "input_term":
@@ -214,12 +213,12 @@ class TorrentCrawlerApp(App):
         
         movie_table = self.query_one("#movie-table", DataTable)
         sub_table = self.query_one("#subtitle-table", DataTable)
-        movie_table.display = True
-        sub_table.display = False
         movie_table.clear()
+        sub_table.clear()
         
         self.notify("Searching... Please wait", timeout=3)
         self.run_search(query)
+        self.run_search_subtitles(term)
 
     class MoviesFetched(Message):
         def __init__(self, movies: list):
@@ -255,21 +254,6 @@ class TorrentCrawlerApp(App):
             self.post_message(self.IndependentSubtitlesFetched(results))
         except Exception:
             self.post_message(self.IndependentSubtitlesFetched({}))
-
-    def action_search_subtitles(self) -> None:
-        term = self.query_one("#input_term", Input).value
-        if not term:
-            self.notify("Please enter a search term for subtitles", severity="warning")
-            return
-            
-        movie_table = self.query_one("#movie-table", DataTable)
-        sub_table = self.query_one("#subtitle-table", DataTable)
-        movie_table.display = False
-        sub_table.display = True
-        sub_table.clear()
-        
-        self.notify("Searching subtitles... Please wait", timeout=3)
-        self.run_search_subtitles(term)
 
     def on_torrent_crawler_app_independent_subtitles_fetched(self, message: IndependentSubtitlesFetched) -> None:
         self.movies = [] # Clear movies focus
