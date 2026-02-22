@@ -32,7 +32,8 @@ class MovieDetailScreen(Screen):
                 yield Label("[red]No torrents available[/red]")
             else:
                 for q, link in available.items():
-                    btn = Button(f"Download {q}", id=f"dl_{q}", variant="success")
+                    safe_id = f"dl_{q.replace('.', '_')}"
+                    btn = Button(f"Download {q}", id=safe_id, variant="success")
                     btn.link = link
                     yield btn
             
