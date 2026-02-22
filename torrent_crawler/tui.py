@@ -134,7 +134,8 @@ class TorrentCrawlerApp(App):
         margin: 1;
         height: auto;
     }
-    #btn_search_sub {
+    #btn_search, #btn_search_sub {
+        width: 100%;
         margin-top: 1;
     }
     """
