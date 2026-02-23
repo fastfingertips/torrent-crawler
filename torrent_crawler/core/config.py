@@ -2,7 +2,8 @@ import os
 from dynaconf import Dynaconf
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = os.path.dirname(current_dir)
+# core/ is in torrent_crawler/, so go up two levels to reach project root where settings.toml is
+root_dir = os.path.dirname(os.path.dirname(current_dir))
 
 settings = Dynaconf(
     envvar_prefix="TORRENT_CRAWLER",

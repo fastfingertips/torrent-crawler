@@ -25,16 +25,16 @@ python -m torrent_crawler
 
 ### Using the CLI (Old version)
 ```bash
-python main.py --cli
+python main.py cli
 # or
-python -m torrent_crawler --cli
+python -m torrent_crawler cli
 ```
 
 ### Using the API
 ```bash
-python main.py --api
+python main.py api
 # or
-python -m torrent_crawler --api
+python -m torrent_crawler api
 ```
 
 ## Installation
