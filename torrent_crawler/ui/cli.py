@@ -4,7 +4,7 @@ from typing import Dict, List
 from torrent_crawler.core.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.providers.subtitles import SubtitleProvider
-from torrent_crawler.utils.helper import Helper
+from torrent_crawler.services.download_service import DownloadService
 from torrent_crawler.core.models import Movie, Torrents, SearchQuery
 from rich.console import Console
 from torrent_crawler.utils.logger import logger
@@ -101,14 +101,14 @@ class Search:
             if len(available_torrents) == 1:
                 if beaupy.confirm("Download {}?".format(available_keys[0])):
                     torrent_link = available_torrents[available_keys[0]]
-                    Helper.open_magnet_link(torrent_link)
+                    DownloadService().open_magnet_link(torrent_link)
                     console.print(f"{Constants.click_link_text} [red]{torrent_link}[/red]")
             else:
                 console.print("[bold]Select quality:[/bold]")
                 selected_quality = beaupy.select(available_keys, cursor=">", cursor_style="cyan")
                 if selected_quality:
                     torrent_link = available_torrents[selected_quality]
-                    Helper.open_magnet_link(torrent_link)
+                    DownloadService().open_magnet_link(torrent_link)
                     console.print(f"{Constants.click_link_text} [red]{torrent_link}[/red]")
 
             if movie_selected.subtitle_url and movie_selected.subtitle_url != '':
@@ -118,7 +118,7 @@ class Search:
                     if subtitles:
                         lang = CLIInputManager.take_input('subtitle', list(subtitles.keys()))
                         subtitle_link = subtitles[lang][0]['link']
-                        downloaded_path = subtitle_prov.download_subtitle(subtitle_link)
+                        downloaded_path = DownloadService().download_and_extract_subtitle(subtitle_link)
                         if downloaded_path:
                             console.print(f"[bold]{Constants.download_zip_text.format('', downloaded_path)}[/bold]")
             

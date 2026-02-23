@@ -1,8 +1,5 @@
-import io
-import zipfile
 from bs4 import BeautifulSoup
 from torrent_crawler.core.constants import Constants
-from torrent_crawler.utils.helper import Helper
 from torrent_crawler.utils.logger import logger
 from torrent_crawler.providers.base import HTTPClient
 
@@ -64,22 +61,3 @@ class SubtitleProvider(HTTPClient):
             return subtitles
         except Exception:
             return {}
-
-    def download_subtitle(self, url):
-        """Downloads and extracts .srt file from zip url using shared session. Returns the storage path if successful."""
-        logger.info(f"SubtitleProvider: Starting subtitle download from {url}")
-        try:
-            r = self.get(url)
-            my_zip = zipfile.ZipFile(io.BytesIO(r.content))
-            
-            storage_path = Helper.get_downloads_folder()
-            
-            for file in my_zip.namelist():
-                if file.endswith('.srt'):
-                    logger.debug(f"SubtitleProvider: Extracting subtitle file: {file}")
-                    my_zip.extract(file, storage_path)
-            logger.info(f"SubtitleProvider: Subtitles extracted to {storage_path}")
-            return storage_path
-        except Exception as e:
-            logger.error(f"SubtitleProvider: Failed to download/extract subtitles: {str(e)}")
-            return None

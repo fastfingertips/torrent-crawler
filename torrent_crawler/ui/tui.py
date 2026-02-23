@@ -8,7 +8,7 @@ from textual.message import Message
 from torrent_crawler.core.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.providers.subtitles import SubtitleProvider
-from torrent_crawler.utils.helper import Helper
+from torrent_crawler.services.download_service import DownloadService
 from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.ui.cli import Search
 from torrent_crawler.utils.logger import logger
@@ -100,11 +100,11 @@ class MovieDetailScreen(Screen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id.startswith("dl_"):
             logger.info(f"Opening magnet link for {event.button.label}")
-            Helper.open_magnet_link(event.button.link)
+            DownloadService().open_magnet_link(event.button.link)
             self.app.notify(f"Opening magnet link for {event.button.label}")
         elif event.button.id == "btn_trailer":
             logger.info(f"Opening trailer for {self.movie.name}")
-            Helper.open_magnet_link(event.button.link)
+            DownloadService().open_magnet_link(event.button.link)
             self.app.notify("Opening Trailer in browser")
         elif "btn-similar" in event.button.classes:
             logger.info(f"User clicked similar movie: {event.button.label}")
@@ -152,8 +152,7 @@ class MovieDetailScreen(Screen):
         if event.data_table.id == "sub-table":
             link = self.subtitle_links.get(event.row_key.value)
             if link:
-                provider = SubtitleProvider()
-                provider.download_subtitle(link)
+                DownloadService().download_and_extract_subtitle(link)
                 self.app.notify(f"Downloading subtitle ZIP: {link}")
 
 class TorrentCrawlerApp(App):
