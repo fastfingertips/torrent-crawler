@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from torrent_crawler.core.constants import Constants
+from torrent_crawler.core import constants as consts
 from torrent_crawler.utils.logger import logger
 from torrent_crawler.providers.base import HTTPClient
 
@@ -12,7 +12,7 @@ class SubtitleProvider(HTTPClient):
         q = search_term
         if page_no > 2:
             q += str(page_no)
-        return Constants.subtitle_search_url.format(q)
+        return consts.SUBTITLE_SEARCH_URL.format(q)
 
     def crawl_list(self, search_term):
         logger.info(f"SubtitleProvider: Searching for subtitle list for '{search_term}'")
@@ -50,7 +50,7 @@ class SubtitleProvider(HTTPClient):
                 language = subtitle.find('td', {'class': 'flag-cell'})\
                     .find('span', {'class': 'sub-lang'}).text
                 download_link = subtitle.find('a').get('href').replace('/subtitles/', 'subtitle/')
-                link = Constants.subtitle_base_url.format(download_link + '.zip')
+                link = consts.SUBTITLE_BASE_URL.format(download_link + '.zip')
                 if language not in subtitles:
                     subtitles[language] = []
                 subtitles[language].append({

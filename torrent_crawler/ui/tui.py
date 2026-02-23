@@ -5,7 +5,7 @@ from textual.screen import Screen
 from textual import work
 from textual.message import Message
 
-from torrent_crawler.core.constants import Constants
+from torrent_crawler.core import constants as consts
 from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.providers.subtitles import SubtitleProvider
 from torrent_crawler.services.download_service import DownloadService
@@ -256,11 +256,11 @@ class TorrentCrawlerApp(App):
                 yield Input(placeholder="e.g. Matrix", id="input_term")
                 
                 yield Label("Genre", classes="label")
-                genre_options = [(g.title(), g) for g in Constants.options['genre']]
+                genre_options = [(g.title(), g) for g in consts.OPTIONS['genre']]
                 yield Select(genre_options, id="select_genre", value="all")
                 
                 yield Label("Sort By", classes="label")
-                order_options = [(o.title(), o) for o in Constants.options['order']]
+                order_options = [(o.title(), o) for o in consts.OPTIONS['order']]
                 yield Select(order_options, id="select_order", value="latest")
                 
                 yield Button("Search", id="btn_search", variant="primary")

@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass, field, asdict
 from typing import List, Dict, Optional
-from torrent_crawler.core.constants import Constants
+from torrent_crawler.core import constants as consts
 
 
 @dataclass
@@ -13,9 +13,9 @@ class Ratings:
     @classmethod
     def from_dict(cls, ratings: dict):
         return cls(
-            rotten_tomatoes_critics=ratings.get(Constants.rotten_tomatoes_critics_rating, ''),
-            rotten_tomatoes_audience=ratings.get(Constants.rotten_tomatoes_audience_rating, ''),
-            imdb=ratings.get(Constants.imdb_rating, '')
+            rotten_tomatoes_critics=ratings.get(consts.ROTTEN_TOMATOES_CRITICS_RATING, ''),
+            rotten_tomatoes_audience=ratings.get(consts.ROTTEN_TOMATOES_AUDIENCE_RATING, ''),
+            imdb=ratings.get(consts.IMDB_RATING, '')
         )
 
 
@@ -30,11 +30,11 @@ class Torrents:
     @classmethod
     def from_dict(cls, torrents: dict):
         return cls(
-            br3d=torrents.get(Constants.blu_ray_3d),
-            br1080=torrents.get(Constants.blu_ray_1080p),
-            br720=torrents.get(Constants.blu_ray_720p),
-            web1080=torrents.get(Constants.web_1080p),
-            web720=torrents.get(Constants.web_720p)
+            br3d=torrents.get(consts.BLU_RAY_3D),
+            br1080=torrents.get(consts.BLU_RAY_1080P),
+            br720=torrents.get(consts.BLU_RAY_720P),
+            web1080=torrents.get(consts.WEB_1080P),
+            web720=torrents.get(consts.WEB_720P)
         )
 
 
@@ -81,7 +81,7 @@ class SearchQuery:
     language: str = 'en'
 
     def get_url(self):
-        return Constants.search_url.format(
+        return consts.SEARCH_URL.format(
             self.search_term, self.quality, self.genre,
             self.rating, self.order_by, self.year, self.language
         )
