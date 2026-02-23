@@ -43,6 +43,7 @@ class Movie:
         self.likes = 0
         self.runtime = ''
         self.image = ''
+        self.similar_movies = []
 
     def set_torrents(self, torrent_list):
         self.torrents = Torrents(torrent_list)

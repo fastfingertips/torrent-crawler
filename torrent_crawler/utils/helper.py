@@ -7,6 +7,7 @@ import zipfile
 import beaupy
 from torrent_crawler.core.constants import Constants
 from rich.console import Console
+from torrent_crawler.utils.logger import logger
 
 console = Console()
 
@@ -94,12 +95,16 @@ class Helper:
     @staticmethod
     def open_magnet_link(magnet):
         """Opens magnet link"""
-        if sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
-            os.startfile(magnet)
-        elif sys.platform.startswith('darwin'):
-            subprocess.Popen(['open', magnet], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        else:
-            subprocess.Popen(['xdg-open', magnet], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        logger.info(f"Helper: Opening magnet link on platform {sys.platform}")
+        try:
+            if sys.platform.startswith('win32') or sys.platform.startswith('cygwin'):
+                os.startfile(magnet)
+            elif sys.platform.startswith('darwin'):
+                subprocess.Popen(['open', magnet], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            else:
+                subprocess.Popen(['xdg-open', magnet], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except Exception as e:
+            logger.error(f"Helper: Failed to open magnet link: {str(e)}")
 
     @staticmethod
     def __get_downloads_folder():
@@ -122,9 +127,15 @@ class Helper:
     @staticmethod
     def download_srt(url):
         """Downloads and extracts .srt file from zip url"""
-        my_zip = Helper.__get_zip_file(url)
-        storage_path = Helper.__get_downloads_folder()
-        console.print(f"[bold]{Constants.download_zip_text.format('', storage_path)}[/bold]")
-        for file in my_zip.namelist():
-            if my_zip.getinfo(file).filename.endswith('.srt'):
-                my_zip.extract(file, storage_path)  # extract the file to current folder if it is a text file
+        logger.info(f"Helper: Starting subtitle download from {url}")
+        try:
+            my_zip = Helper.__get_zip_file(url)
+            storage_path = Helper.__get_downloads_folder()
+            console.print(f"[bold]{Constants.download_zip_text.format('', storage_path)}[/bold]")
+            for file in my_zip.namelist():
+                if my_zip.getinfo(file).filename.endswith('.srt'):
+                    logger.debug(f"Helper: Extracting subtitle file: {file}")
+                    my_zip.extract(file, storage_path)  # extract the file to current folder if it is a text file
+            logger.info(f"Helper: Subtitles extracted to {storage_path}")
+        except Exception as e:
+            logger.error(f"Helper: Failed to download/extract subtitles: {str(e)}")

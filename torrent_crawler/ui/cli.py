@@ -7,7 +7,7 @@ from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.utils.helper import Helper
 from torrent_crawler.core.models import Movie, Torrents, SearchQuery
 from rich.console import Console
-
+from torrent_crawler.utils.logger import logger
 
 console = Console()
 
@@ -48,6 +48,7 @@ class Search:
 
         mid = int(selected_choice.split(':')[0])
         movie_selected = movies[mid - 1]
+        logger.info(f"CLI: User selected movie: {movie_selected.name}")
         console.print(f"[bold]{Constants.available_torrents_text}[/bold]")
 
         if hasattr(movie_selected, 'raw_torrents'):
@@ -104,6 +105,7 @@ class SearchInput:
         g = Helper.take_optional_input('genre')
         o = Helper.take_optional_input('order')
 
+        logger.info(f"CLI: Validated search query created: term='{s}', genre='{g}', order='{o}'")
         return SearchQuery(s, q, g, 0, o, 0, 'all')
 
 def main():

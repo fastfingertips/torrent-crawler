@@ -11,6 +11,7 @@ from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.utils.helper import Helper
 from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.ui.cli import Search
+from torrent_crawler.utils.logger import logger
 
 
 class MovieDetailScreen(Screen):
@@ -80,25 +81,46 @@ class MovieDetailScreen(Screen):
                 yield DataTable(id="sub-table")
                 self.fetch_subtitles()
             
+            # Similar Movies Section
+            if self.movie.similar_movies:
+                yield Label("\n[bold]Similar Movies:[/bold]")
+                with Horizontal(id="similar-movies"):
+                    for sim in self.movie.similar_movies:
+                        # Display as a clickable button or label
+                        btn = Button(sim['title'], classes="btn-similar")
+                        btn.link = sim['link']
+                        yield btn
+
             yield Label("\n")
         yield Footer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id.startswith("dl_"):
+            logger.info(f"Opening magnet link for {event.button.label}")
             Helper.open_magnet_link(event.button.link)
             self.app.notify(f"Opening magnet link for {event.button.label}")
         elif event.button.id == "btn_trailer":
+            logger.info(f"Opening trailer for {self.movie.name}")
             Helper.open_magnet_link(event.button.link)
             self.app.notify("Opening Trailer in browser")
+        elif "btn-similar" in event.button.classes:
+            logger.info(f"User clicked similar movie: {event.button.label}")
+            self.app.notify(f"Navigating to: {event.button.label}")
+            # Create a dummy movie object and let the app handle it
+            new_movie = Movie(0, str(event.button.label), event.button.link, 0)
+            self.app.navigate_to_movie(new_movie)
         elif event.button.id == "btn_back":
+            logger.debug("Returning to search results")
             self.app.pop_screen()
 
-    @work(thread=True)
+    @work(thread=True, exclusive=True)
     def fetch_subtitles(self) -> None:
+        logger.debug(f"Fetching subtitles for URL: {self.movie.subtitle_url}")
         try:
             subtitles = SubtitleService.crawl_movie(self.movie.subtitle_url)
             self.post_message(self.SubtitlesFetched(subtitles))
-        except Exception:
+        except Exception as e:
+            logger.error(f"Failed to fetch subtitles: {str(e)}")
             self.post_message(self.SubtitlesFetched({}))
 
     def on_movie_detail_screen_subtitles_fetched(self, message: SubtitlesFetched) -> None:
@@ -180,9 +202,19 @@ class TorrentCrawlerApp(App):
         border-left: solid $accent;
         margin: 1 0;
     }
-    #detail-actions, #torrent-buttons {
+    #detail-actions, #torrent-buttons, #similar-movies {
         height: auto;
         margin: 1 0;
+    }
+    #similar-movies {
+        overflow-x: scroll;
+        width: 100%;
+        height: 6;
+    }
+    .btn-similar {
+        margin-right: 1;
+        width: 25;
+        border: tall $accent;
     }
     MovieDetailScreen Button {
         margin-right: 1;
@@ -265,6 +297,7 @@ class TorrentCrawlerApp(App):
         genre = self.query_one("#select_genre", Select).value
         order = self.query_one("#select_order", Select).value
         
+        logger.info(f"Starting TUI search: term='{term}', genre='{genre}', order='{order}'")
         query = SearchQuery(term, 'all', genre, 0, order, 0, 'all')
         
         movie_table = self.query_one("#movie-table", DataTable)
@@ -280,7 +313,7 @@ class TorrentCrawlerApp(App):
             self.movies = movies
             super().__init__()
 
-    @work(thread=True)
+    @work(thread=True, exclusive=True)
     def run_search(self, query: SearchQuery) -> None:
         # api_flag=True and print_console=False to ensure clean output without print mess
         service = MovieService(api_flag=True, print_console=False)
@@ -291,6 +324,9 @@ class TorrentCrawlerApp(App):
         self.movies = message.movies
         table_movies = self.query_one("#movie-table", DataTable)
         table_subs = self.query_one("#subtitle-table", DataTable)
+        
+        table_movies.clear()
+        table_subs.clear()
         
         if not self.movies:
             self.notify("No movies found.", severity="error")
@@ -314,6 +350,7 @@ class TorrentCrawlerApp(App):
             if key.isdigit() and self.movies:
                 idx = int(key)
                 movie = self.movies[idx]
+                logger.info(f"Selected movie from table: {movie.name}")
                 self.push_screen(MovieDetailScreen(movie, self))
         elif event.data_table.id == "subtitle-table":
             key = str(event.row_key.value)
@@ -324,6 +361,25 @@ class TorrentCrawlerApp(App):
                     dummy_movie.subtitle_url = sub_data["url"]
                     dummy_movie.raw_torrents = {}
                     self.push_screen(MovieDetailScreen(dummy_movie, self))
+
+    def navigate_to_movie(self, movie: Movie) -> None:
+        """Helper to fetch full details and show the detail screen."""
+        self.notify(f"Loading details for {movie.name}...")
+        self.run_detail_navigation(movie)
+
+    @work(thread=True, exclusive=True)
+    def run_detail_navigation(self, movie: Movie) -> None:
+        service = MovieService(api_flag=True, print_console=False)
+        movie = service.crawl_movie(movie)
+        self.post_message(self.MovieDetailReady(movie))
+
+    class MovieDetailReady(Message):
+        def __init__(self, movie: Movie):
+            self.movie = movie
+            super().__init__()
+
+    def on_torrent_crawler_app_movie_detail_ready(self, message: MovieDetailReady) -> None:
+        self.push_screen(MovieDetailScreen(message.movie, self))
 
 
 if __name__ == "__main__":
