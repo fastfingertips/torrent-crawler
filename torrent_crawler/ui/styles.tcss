@@ -124,7 +124,7 @@ DataTable > .datatable--cursor {
 #detail-synopsis {
     padding: 1 2;
     background: $surface;
-    border-left: vline $accent;
+    border-left: solid $accent;
     margin: 1 0;
     height: auto;
     max-height: 12;
@@ -187,7 +187,7 @@ Button.-active {
 
 .btn-torrent {
     background: $surface;
-    border: thin $primary 20%;
+    border: solid $primary 20%;
 }
 
 #sub-table {

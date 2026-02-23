@@ -159,7 +159,6 @@ class MovieDetailScreen(Screen):
 
 
 class TorrentCrawlerApp(App):
-class TorrentCrawlerApp(App):
     CSS_PATH = "styles.tcss"
 
     BINDINGS = [
