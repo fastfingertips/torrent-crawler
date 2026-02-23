@@ -243,7 +243,7 @@ class TorrentCrawlerApp(App):
         background: $surface;
         color: $text;
         text-style: bold;
-        transition: background 200ms sleep;
+        transition: background 200ms in_out_cubic;
     }
     
     Button:hover {
