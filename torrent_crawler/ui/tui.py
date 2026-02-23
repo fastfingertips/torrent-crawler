@@ -153,6 +153,7 @@ class MovieDetailScreen(Screen):
                 provider = SubtitleProvider()
                 provider.download_subtitle(link)
                 self.app.notify(f"Downloading subtitle ZIP: {link}")
+
 class TorrentCrawlerApp(App):
     CSS = """
     #sidebar {

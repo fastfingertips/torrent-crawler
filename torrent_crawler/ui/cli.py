@@ -11,6 +11,39 @@ from torrent_crawler.utils.logger import logger
 
 console = Console()
 
+class CLIInputManager:
+    @staticmethod
+    def take_input(input_type, options) -> str:
+        if input_type not in Constants.input_types:
+            console.print(f"[bold]Wrong input type: {input_type}[/bold]")
+            exit(1)
+        specific_text = Constants.specific_text[input_type]
+        console.print(f"[bold]{specific_text}[/bold]")
+        
+        selected = beaupy.select(options, cursor=">", cursor_style="cyan")
+        if not selected:
+            exit(0)
+        return selected
+
+    @staticmethod
+    def take_optional_input(input_type):
+        if input_type not in Constants.input_types:
+            console.print(f"[bold]Wrong input type: {input_type}[/bold]")
+            exit(1)
+        
+        selection_text = Constants.selection_text[input_type]
+        special_final_option = Constants.special_final_option[input_type]
+        specific_final_option = Constants.specific_final_option[input_type]
+        options = Constants.options[input_type]
+        
+        if beaupy.confirm(selection_text):
+            final_option = CLIInputManager.take_input(input_type, options)
+            console.print(f"[blue]Note::[/blue] {specific_final_option.format(final_option)}")
+            return final_option
+        
+        console.print(f"[blue]Note::[/blue] {special_final_option}")
+        return options[0]
+
 def sigint_handler(signum, frame):
     console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
     exit(1)
@@ -78,12 +111,16 @@ class Search:
                     Helper.open_magnet_link(torrent_link)
                     console.print(f"{Constants.click_link_text} [red]{torrent_link}[/red]")
 
-
             if movie_selected.subtitle_url and movie_selected.subtitle_url != '':
                 if beaupy.confirm(Constants.selection_text['subtitle']):
                     subtitle_prov = SubtitleProvider()
-                    subtitle_prov.search_subtitle(movie_selected.subtitle_url)
-
+                    subtitles = subtitle_prov.crawl_movie(movie_selected.subtitle_url)
+                    if subtitles:
+                        lang = CLIInputManager.take_input('subtitle', list(subtitles.keys()))
+                        subtitle_link = subtitles[lang][0]['link']
+                        downloaded_path = subtitle_prov.download_subtitle(subtitle_link)
+                        if downloaded_path:
+                            console.print(f"[bold]{Constants.download_zip_text.format('', downloaded_path)}[/bold]")
             
             if beaupy.confirm(Constants.another_movies_text.format("", self.search_query.search_term)):
                 self.show_movies(movies)
@@ -103,8 +140,8 @@ class SearchInput:
             s = console.input("[bold cyan]❯[/bold cyan] Please enter search string: ")
 
         q = 'all'
-        g = Helper.take_optional_input('genre')
-        o = Helper.take_optional_input('order')
+        g = CLIInputManager.take_optional_input('genre')
+        o = CLIInputManager.take_optional_input('order')
 
         logger.info(f"CLI: Validated search query created: term='{s}', genre='{g}', order='{o}'")
         return SearchQuery(s, q, g, 0, o, 0, 'all')
@@ -117,7 +154,6 @@ def main():
         if not beaupy.confirm(Constants.restart_search_text):
             console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
             break
-
 
 if __name__ == '__main__':
     main()

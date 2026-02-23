@@ -1,66 +1,9 @@
 import os
 import sys
 import subprocess
-import beaupy
-from torrent_crawler.core.constants import Constants
-from rich.console import Console
 from torrent_crawler.utils.logger import logger
 
-console = Console()
-
 class Helper:
-    @staticmethod
-    def ask_for_options() -> bool:
-        return beaupy.confirm("Proceed?")
-
-    @staticmethod
-    def take_int_input(no_of_options) -> int:
-        index = None
-        while True:
-            try:
-                index = int(console.input(f"[bold]{Constants.choose_option_text}[/bold]"))
-                if 1 <= index <= no_of_options:
-                    break
-                else:
-                    console.print(f"[red]{Constants.wrong_option_text}[/red]")
-                    continue
-            except ValueError:
-                console.print(f"[red]{Constants.wrong_option_text}[/red]")
-                continue
-        return index
-
-    @staticmethod
-    def take_input(input_type, options) -> str:
-        if input_type not in Constants.input_types:
-            console.print(f"[bold]Wrong input type: {input_type}[/bold]")
-            exit(1)
-        specific_text = Constants.specific_text[input_type]
-        console.print(f"[bold]{specific_text}[/bold]")
-        
-        selected = beaupy.select(options, cursor=">", cursor_style="cyan")
-        if not selected:
-            exit(0)
-        return selected
-
-    @staticmethod
-    def take_optional_input(input_type):
-        if input_type not in Constants.input_types:
-            console.print(f"[bold]Wrong input type: {input_type}[/bold]")
-            exit(1)
-        
-        selection_text = Constants.selection_text[input_type]
-        special_final_option = Constants.special_final_option[input_type]
-        specific_final_option = Constants.specific_final_option[input_type]
-        options = Constants.options[input_type]
-        
-        if beaupy.confirm(selection_text):
-            final_option = Helper.take_input(input_type, options)
-            console.print(f"[blue]Note::[/blue] {specific_final_option.format(final_option)}")
-            return final_option
-        
-        console.print(f"[blue]Note::[/blue] {special_final_option}")
-        return options[0]
-
     @staticmethod
     def open_magnet_link(magnet):
         """Opens magnet link"""

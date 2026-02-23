@@ -6,9 +6,6 @@ from torrent_crawler.core.constants import Constants
 from torrent_crawler.utils.helper import Helper
 from torrent_crawler.utils.logger import logger
 from torrent_crawler.providers.base import BaseProvider
-from rich.console import Console
-
-console = Console()
 
 class SubtitleProvider(BaseProvider):
     def __init__(self):
@@ -70,29 +67,20 @@ class SubtitleProvider(BaseProvider):
             return {}
 
     def download_subtitle(self, url):
-        """Downloads and extracts .srt file from zip url using shared session."""
+        """Downloads and extracts .srt file from zip url using shared session. Returns the storage path if successful."""
         logger.info(f"SubtitleProvider: Starting subtitle download from {url}")
         try:
             r = self.get(url)
             my_zip = zipfile.ZipFile(io.BytesIO(r.content))
             
             storage_path = Helper.get_downloads_folder()
-            console.print(f"[bold]{Constants.download_zip_text.format('', storage_path)}[/bold]")
             
             for file in my_zip.namelist():
                 if file.endswith('.srt'):
                     logger.debug(f"SubtitleProvider: Extracting subtitle file: {file}")
                     my_zip.extract(file, storage_path)
             logger.info(f"SubtitleProvider: Subtitles extracted to {storage_path}")
-            return True
+            return storage_path
         except Exception as e:
             logger.error(f"SubtitleProvider: Failed to download/extract subtitles: {str(e)}")
-            return False
-
-    def search_subtitle(self, url):
-        subtitles = self.crawl_movie(url)
-        if not subtitles:
-            return
-        lang = Helper.take_input('subtitle', list(subtitles.keys()))
-        subtitle_link = subtitles[lang][0]['link']
-        self.download_subtitle(subtitle_link)
+            return None
