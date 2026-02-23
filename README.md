@@ -5,17 +5,17 @@
 ![Python](https://img.shields.io/pypi/pyversions/search-torrent?style=for-the-badge)
 [![GitHub last commit](https://img.shields.io/github/last-commit/fastfingertips/torrent-crawler?style=for-the-badge)](https://github.com/fastfingertips/torrent-crawler/commits/revive-crawler)
 
-A lightweight and high-performance Terminal User Interface (TUI) for searching movie torrents and subtitles simultaneously. Built with Python and Textual.
+A Terminal User Interface (TUI) for searching movie torrents and subtitles. Built with Python and Textual.
 
 ## Features
 
-- **Blazing Fast**: Uses `curl_cffi` for high-performance requests, bypassing basic web protections.
-- **Dual View TUI**: Side-by-side or stacked view of Movies and Subtitles.
-- **Simultaneous Search**: Single search triggers both Movie and Subtitle lookup.
-- **Automatic Subtitle Matching**: Finds the exact correct subtitle URL directly from the movie source.
-- **Robust Crawler**: Built-in error handling and pagination management to handle large search results without crashing.
-- **Rich Metadata**: Extracts synopsis, genres, likes, and similar movies.
-- **Modern Logging**: Integrated with Loguru for detailed performance tracking and debugging.
+- **Requests**: Uses `curl_cffi` for browser-impersonated HTTP requests.
+- **Dual View TUI**: View of Movies and Subtitles.
+- **Simultaneous Search**: Triggers both Movie and Subtitle lookup.
+- **Automatic Subtitle Matching**: Finds subtitle URLs directly from the movie source.
+- **Crawler**: Built-in error handling and pagination management.
+- **Metadata**: Extracts synopsis, genres, and similar movies.
+- **Logging**: Integrated with Loguru for tracking and debugging.
 
 ## Usage
 
@@ -69,17 +69,17 @@ pip install .
 
 ## Dependencies Breakdown
 
-This project follows a "laboratorial" dependency management approach. Here is what powers the crawler under the hood:
+This project uses the following dependencies:
 
-- **textual**: The core engine for our modern Dark-Theme Dashboard (TUI). It handles all terminal-based UI interactions.
-- **curl_cffi**: A high-performance HTTP client that impersonates real browsers (Chrome/Firefox) to bypass bot protection and ensuring stable crawling.
-- **typer**: Manages all Command Line entry points. It’s what allows you to switch between `tui`, `cli`, and `api` modes seamlessly.
-- **beautifulsoup4 & lxml**: The "brain" of our scraper. `lxml` provides industrial-grade parsing speed and reliability for extracting data from HTML.
-- **Flask**: Powers the local API server, allowing other applications to query this crawler's data.
-- **dynaconf**: A powerful configuration manager that handles everything from site URLs to internal app settings across different environments.
-- **loguru**: Provides advanced, color-coded logging for better debugging and runtime monitoring.
-- **rich**: The styling layer that provides beautiful colors, tables, and formatting for both the CLI and TUI.
-- **beaupy**: Used in the legacy CLI mode to provide interactive, easy-to-navigate menus.
+- **textual**: The engine for the TUI.
+- **curl_cffi**: HTTP client that impersonates browsers.
+- **typer**: Manages CLI entry points.
+- **beautifulsoup4 & lxml**: Used for parsing HTML.
+- **Flask**: Powers the local API server.
+- **dynaconf**: Configuration manager.
+- **loguru**: Logging library.
+- **rich**: Provides formatting for the CLI and TUI.
+- **beaupy**: Used in the legacy CLI mode.
 
 ## Contributing
 Feel free to fork and submit PRs. This project is currently undergoing a major refactor to improve speed and UI consistency.
@@ -87,6 +87,7 @@ Feel free to fork and submit PRs. This project is currently undergoing a major r
 ---
 
 ## Credits
-This project is a modernized version of the original [torrent-crawler](https://github.com/rajat19/torrent-crawler) created by [Rajat Srivastava](https://github.com/rajat19). Special thanks to him for the initial foundation.
 
-Developed with focus on speed and ease of use.
+This project is a version of the original [torrent-crawler](https://github.com/rajat19/torrent-crawler) created by [Rajat Srivastava](https://github.com/rajat19).
+
+Search and download torrents.

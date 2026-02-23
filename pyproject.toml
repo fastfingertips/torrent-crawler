@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "torrent-crawler"
 version = "2.0.0"
-description = "A lightweight and high-performance TUI for searching movie torrents and subtitles."
+description = "A TUI for searching movie torrents and subtitles."
 readme = "README.md"
 authors = [
     { name = "fastfingertips" },
