@@ -49,6 +49,11 @@ class Search:
         mid = int(selected_choice.split(':')[0])
         movie_selected = movies[mid - 1]
         logger.info(f"CLI: User selected movie: {movie_selected.name}")
+        
+        # Fetch full details (magnets, etc) now that user picked one
+        service = MovieService()
+        movie_selected = service.crawl_movie(movie_selected)
+        
         console.print(f"[bold]{Constants.available_torrents_text}[/bold]")
 
         if hasattr(movie_selected, 'raw_torrents'):

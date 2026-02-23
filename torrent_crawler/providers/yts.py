@@ -72,9 +72,21 @@ class YTSProvider(BaseProvider):
                 movie_year = movie_details.find('div', {'class': 'browse-movie-year'}).text
                 
                 movie = Movie(current_movie_count, movie_name, movie_link, int(movie_year))
-                # Note: We can fetch details here or let the UI trigger it
-                # For now keeping it consistent with existing logic which calls it during search loop
-                movie = self.get_details(movie)
+                
+                # Extract basic info from browse page to avoid extra requests
+                # 1. Rating
+                rating_tag = wrap.find('h4', {'class': 'rating'})
+                if rating_tag:
+                    movie.set_ratings({Constants.imdb_rating: rating_tag.text.split('/')[0].strip()})
+                
+                # 2. Qualities
+                tags_div = wrap.find('div', {'class': 'browse-movie-tags'})
+                if tags_div:
+                    tags = tags_div.find_all('a')
+                    torrent_list = {tag.text: "" for tag in tags} # We don't have magnet yet, but we have types
+                    movie.set_torrents(torrent_list)
+                    movie.raw_torrents = torrent_list
+                
                 movies.append(movie)
                 current_movie_count += 1
                 
