@@ -28,7 +28,7 @@ python -m torrent_crawler --cli
 
 ### Using the API
 ```bash
-python api.py
+python -m torrent_crawler --api
 ```
 
 ## Installation

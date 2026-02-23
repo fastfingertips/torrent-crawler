@@ -1,1 +1,1 @@
-web: gunicorn api:app
+web: gunicorn torrent_crawler.api.app:app
