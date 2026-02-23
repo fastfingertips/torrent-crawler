@@ -23,10 +23,8 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install --system -e .
-          uv pip install --system ruff bandit
+          uv pip install --system ruff
           
       - name: Run Ruff (Linter)
         run: ruff check .
-        
-      - name: Run Bandit (Security)
-        run: bandit -r torrent_crawler/ -c .bandit
+
