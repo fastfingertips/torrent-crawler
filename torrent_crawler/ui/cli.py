@@ -4,7 +4,7 @@ from typing import Dict, List
 from torrent_crawler.core.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.services.subtitle_service import SubtitleService
-from torrent_crawler.helper import Helper
+from torrent_crawler.utils.helper import Helper
 from torrent_crawler.core.models import Movie, Torrents, SearchQuery
 from rich.console import Console
 

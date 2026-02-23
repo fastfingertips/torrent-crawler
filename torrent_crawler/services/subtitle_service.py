@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from curl_cffi import requests
 from torrent_crawler.core.constants import Constants
-from torrent_crawler.helper import Helper
+from torrent_crawler.utils.helper import Helper
 
 class SubtitleService:
     @staticmethod
