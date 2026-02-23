@@ -48,17 +48,22 @@ git clone https://github.com/fastfingertips/torrent-crawler.git
 cd torrent-crawler
 ```
 
-2. Setup virtual environment:
+2. Setup virtual environment and install dependencies using `uv` (recommended for speed):
 ```bash
-python -m venv .venv
+# If you don't have uv installed: pip install uv
+uv venv
 # On Windows:
 .venv\Scripts\activate
 # On Linux/macOS:
 source .venv/bin/activate
+
+uv pip install -e .
 ```
 
-3. Install dependencies:
+*Alternatively, with standard pip:*
 ```bash
+python -m venv .venv
+# activate venv...
 pip install .
 ```
 
