@@ -1,14 +1,16 @@
 from typing import List
 from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.providers.yts import YTSProvider
+from torrent_crawler.providers.base import BaseProvider
 from torrent_crawler.utils.logger import logger, log_runtime
 
 MoviesList = List[Movie]
 
 class MovieService:
-    def __init__(self, api_flag=False):
+    def __init__(self, provider: 'BaseProvider' = None, api_flag=False):
         self.api_flag = api_flag
-        self.provider = YTSProvider()
+        # Dependency Injection applied
+        self.provider = provider if provider is not None else YTSProvider()
 
     @log_runtime
     def crawl_list(self, query: SearchQuery) -> MoviesList:
