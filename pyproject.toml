@@ -8,7 +8,8 @@ version = "2.0.0"
 description = "A lightweight and high-performance TUI for searching movie torrents and subtitles."
 readme = "README.md"
 authors = [
-    { name = "fastfingertips" }
+    { name = "fastfingertips" },
+    { name = "Rajat Srivastava", email = "rajatsri94@gmail.com" }
 ]
 license = { text = "MIT" }
 classifiers = [

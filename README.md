@@ -1,4 +1,5 @@
 # Torrent Crawler
+> **Note:** This is an enhanced fork of the original [torrent-crawler](https://github.com/rajat19/torrent-crawler) by [Rajat Srivastava](https://github.com/rajat19).
 
 [![License](https://img.shields.io/github/license/fastfingertips/torrent-crawler?style=for-the-badge)](https://github.com/fastfingertips/torrent-crawler/blob/master/LICENSE)
 ![Python](https://img.shields.io/pypi/pyversions/search-torrent?style=for-the-badge)
@@ -13,6 +14,8 @@ A lightweight and high-performance Terminal User Interface (TUI) for searching m
 - **Simultaneous Search**: Single search triggers both Movie and Subtitle lookup.
 - **Automatic Subtitle Matching**: Finds the exact correct subtitle URL directly from the movie source.
 - **Robust Crawler**: Built-in error handling and pagination management to handle large search results without crashing.
+- **Rich Metadata**: Extracts synopsis, genres, likes, and similar movies.
+- **Modern Logging**: Integrated with Loguru for detailed performance tracking and debugging.
 
 ## Usage
 
@@ -48,7 +51,10 @@ cd torrent-crawler
 2. Setup virtual environment:
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# On Windows:
+.venv\Scripts\activate
+# On Linux/macOS:
+source .venv/bin/activate
 ```
 
 3. Install dependencies:
@@ -60,4 +66,8 @@ pip install -r requirements.txt
 Feel free to fork and submit PRs. This project is currently undergoing a major refactor to improve speed and UI consistency.
 
 ---
+
+## Credits
+This project is a modernized version of the original [torrent-crawler](https://github.com/rajat19/torrent-crawler) created by [Rajat Srivastava](https://github.com/rajat19). Special thanks to him for the initial foundation.
+
 Developed with focus on speed and ease of use.
