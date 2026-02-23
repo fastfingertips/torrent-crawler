@@ -18,16 +18,22 @@ A lightweight and high-performance Terminal User Interface (TUI) for searching m
 
 ### Using the TUI (Recommended)
 ```bash
+python main.py
+# or
 python -m torrent_crawler
 ```
 
 ### Using the CLI (Old version)
 ```bash
+python main.py --cli
+# or
 python -m torrent_crawler --cli
 ```
 
 ### Using the API
 ```bash
+python main.py --api
+# or
 python -m torrent_crawler --api
 ```
 
