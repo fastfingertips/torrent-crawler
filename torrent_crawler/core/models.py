@@ -1,21 +1,22 @@
 import json
-from dataclasses import dataclass, field, asdict
-from typing import List, Dict, Optional
+from dataclasses import asdict, dataclass, field
+from typing import Optional
+
 from torrent_crawler.core import constants as consts
 
 
 @dataclass
 class Ratings:
-    rotten_tomatoes_critics: str = ''
-    rotten_tomatoes_audience: str = ''
-    imdb: str = ''
+    rotten_tomatoes_critics: str = ""
+    rotten_tomatoes_audience: str = ""
+    imdb: str = ""
 
     @classmethod
     def from_dict(cls, ratings: dict):
         return cls(
-            rotten_tomatoes_critics=ratings.get(consts.ROTTEN_TOMATOES_CRITICS_RATING, ''),
-            rotten_tomatoes_audience=ratings.get(consts.ROTTEN_TOMATOES_AUDIENCE_RATING, ''),
-            imdb=ratings.get(consts.IMDB_RATING, '')
+            rotten_tomatoes_critics=ratings.get(consts.ROTTEN_TOMATOES_CRITICS_RATING, ""),
+            rotten_tomatoes_audience=ratings.get(consts.ROTTEN_TOMATOES_AUDIENCE_RATING, ""),
+            imdb=ratings.get(consts.IMDB_RATING, ""),
         )
 
 
@@ -34,7 +35,7 @@ class Torrents:
             br1080=torrents.get(consts.BLU_RAY_1080P),
             br720=torrents.get(consts.BLU_RAY_720P),
             web1080=torrents.get(consts.WEB_1080P),
-            web720=torrents.get(consts.WEB_720P)
+            web720=torrents.get(consts.WEB_720P),
         )
 
 
@@ -46,16 +47,16 @@ class Movie:
     year: int
     torrents: Optional[Torrents] = None
     ratings: Optional[Ratings] = None
-    subtitle_url: str = ''
-    synopsis: str = ''
-    trailer: str = ''
-    screenshots: List[str] = field(default_factory=list)
-    genres: List[str] = field(default_factory=list)
+    subtitle_url: str = ""
+    synopsis: str = ""
+    trailer: str = ""
+    screenshots: list[str] = field(default_factory=list)
+    genres: list[str] = field(default_factory=list)
     likes: int = 0
-    runtime: str = ''
-    image: str = ''
-    similar_movies: List[dict] = field(default_factory=list)
-    raw_torrents: Dict = field(default_factory=dict)
+    runtime: str = ""
+    image: str = ""
+    similar_movies: list[dict] = field(default_factory=list)
+    raw_torrents: dict = field(default_factory=dict)
 
     def set_torrents(self, torrent_list):
         self.torrents = Torrents.from_dict(torrent_list)
@@ -78,10 +79,9 @@ class SearchQuery:
     rating: str
     order_by: str
     year: int = 0
-    language: str = 'en'
+    language: str = "en"
 
     def get_url(self):
         return consts.SEARCH_URL.format(
-            self.search_term, self.quality, self.genre,
-            self.rating, self.order_by, self.year, self.language
+            self.search_term, self.quality, self.genre, self.rating, self.order_by, self.year, self.language
         )

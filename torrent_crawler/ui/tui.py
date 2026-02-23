@@ -1,21 +1,22 @@
+from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.widgets import Header, Footer, Input, Select, Button, DataTable, Label
-from textual.screen import Screen
-from textual import work
 from textual.message import Message
+from textual.screen import Screen
+from textual.widgets import Button, DataTable, Footer, Header, Input, Label, Select
 
 from torrent_crawler.core import constants as consts
-from torrent_crawler.services.movie_service import MovieService
+from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.providers.subtitles import SubtitleProvider
 from torrent_crawler.services.download_service import DownloadService
-from torrent_crawler.core.models import Movie, SearchQuery
+from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.ui.cli import Search
 from torrent_crawler.utils.logger import logger
 
 
 class MovieDetailScreen(Screen):
     """Screen to show movie details and download links."""
+
     def __init__(self, movie, app_instance):
         super().__init__()
         self.movie = movie
@@ -31,16 +32,16 @@ class MovieDetailScreen(Screen):
         with VerticalScroll(id="detail-container"):
             # Header Section
             yield Label(f"[bold cyan]{self.movie.name} ({self.movie.year})[/bold cyan]", id="detail-title")
-            
+
             # Metadata Row
             meta_info = []
             if self.movie.genres:
                 meta_info.append(f"[yellow]{' / '.join(self.movie.genres)}[/yellow]")
             if self.movie.likes:
                 meta_info.append(f"[red]❤ {self.movie.likes} Likes[/red]")
-            if hasattr(self.movie, 'ratings') and self.movie.ratings:
+            if hasattr(self.movie, "ratings") and self.movie.ratings:
                 meta_info.append(f"[bold gold3]⭐ {self.movie.ratings.imdb} IMDb[/bold gold3]")
-            
+
             if meta_info:
                 yield Label(" | ".join(meta_info), id="detail-meta")
 
@@ -55,43 +56,44 @@ class MovieDetailScreen(Screen):
                     btn_trailer = Button("Watch Trailer", id="btn_trailer", variant="primary")
                     btn_trailer.link = self.movie.trailer
                     yield btn_trailer
-                
+
                 yield Button("Back to Results", id="btn_back", variant="error")
 
             # Torrents Section
             yield Label("\n[bold]Available Torrents:[/bold]")
-            if hasattr(self.movie, 'raw_torrents') and self.movie.raw_torrents:
+            if hasattr(self.movie, "raw_torrents") and self.movie.raw_torrents:
                 available = self.movie.raw_torrents
             else:
                 available = self.app_instance.search_handler.get_available_torrents(self.movie.torrents)
-            
+
             if not available:
                 yield Label("[red]No torrents available[/red]")
             else:
                 import re
+
                 with Horizontal(id="torrent-buttons"):
                     for q, link in available.items():
                         # Textual IDs can only contain [a-zA-Z0-9_-]
-                        clean_q = re.sub(r'[^a-zA-Z0-9_\-]', '_', q)
+                        clean_q = re.sub(r"[^a-zA-Z0-9_\-]", "_", q)
                         safe_id = f"dl_{clean_q}"
                         btn = Button(f"Download {q}", id=safe_id, variant="success")
                         btn.link = link
                         yield btn
-            
+
             # Subtitles Section
             if self.movie.subtitle_url:
                 yield Label("\n[bold]Subtitles (Fetching...):[/bold]", id="sub-title-label")
                 yield DataTable(id="sub-table")
                 self.fetch_subtitles()
-            
+
             # Similar Movies Section
             if self.movie.similar_movies:
                 yield Label("\n[bold]Similar Movies:[/bold]")
                 with Horizontal(id="similar-movies"):
                     for sim in self.movie.similar_movies:
                         # Display as a clickable button or label
-                        btn = Button(sim['title'], classes="btn-similar")
-                        btn.link = sim['link']
+                        btn = Button(sim["title"], classes="btn-similar")
+                        btn.link = sim["link"]
                         yield btn
 
             yield Label("\n")
@@ -130,22 +132,22 @@ class MovieDetailScreen(Screen):
     def on_movie_detail_screen_subtitles_fetched(self, message: SubtitlesFetched) -> None:
         table = self.query_one("#sub-table", DataTable)
         label = self.query_one("#sub-title-label", Label)
-        
+
         if not message.subtitles:
             label.update("\n[bold]Subtitles:[/bold] [red]No subtitles found[/red]")
             table.display = False
             return
-            
+
         label.update("\n[bold]Subtitles:[/bold]")
         table.add_columns("Language", "Rating")
         table.cursor_type = "row"
         self.subtitle_links = {}
-        
+
         row_id = 0
         for lang, subs in message.subtitles.items():
             for sub in subs:
-                table.add_row(lang, sub.get('rating', ''), key=str(row_id))
-                self.subtitle_links[str(row_id)] = sub.get('link')
+                table.add_row(lang, sub.get("rating", ""), key=str(row_id))
+                self.subtitle_links[str(row_id)] = sub.get("link")
                 row_id += 1
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
@@ -154,6 +156,7 @@ class MovieDetailScreen(Screen):
             if link:
                 DownloadService().download_and_extract_subtitle(link)
                 self.app.notify(f"Downloading subtitle ZIP: {link}")
+
 
 class TorrentCrawlerApp(App):
     CSS = """
@@ -235,7 +238,7 @@ class TorrentCrawlerApp(App):
         margin-top: 1;
     }
     """
-    
+
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("down", "focus_next", "Next"),
@@ -254,29 +257,29 @@ class TorrentCrawlerApp(App):
             with Vertical(id="sidebar"):
                 yield Label("Search Term", classes="label")
                 yield Input(placeholder="e.g. Matrix", id="input_term")
-                
+
                 yield Label("Genre", classes="label")
-                genre_options = [(g.title(), g) for g in consts.OPTIONS['genre']]
+                genre_options = [(g.title(), g) for g in consts.OPTIONS["genre"]]
                 yield Select(genre_options, id="select_genre", value="all")
-                
+
                 yield Label("Sort By", classes="label")
-                order_options = [(o.title(), o) for o in consts.OPTIONS['order']]
+                order_options = [(o.title(), o) for o in consts.OPTIONS["order"]]
                 yield Select(order_options, id="select_order", value="latest")
-                
+
                 yield Button("Search", id="btn_search", variant="primary")
-            
+
             with Vertical(id="main-content"):
                 with Vertical(id="tables-container"):
                     yield Label("Movies", classes="table-label")
                     yield DataTable(id="movie-table")
-                
+
         yield Footer()
 
     def on_ready(self) -> None:
         table_movies = self.query_one("#movie-table", DataTable)
         table_movies.add_columns("Title", "Year", "IMDb", "Links")
         table_movies.cursor_type = "row"
-        
+
         self.query_one("#input_term", Input).focus()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -292,16 +295,16 @@ class TorrentCrawlerApp(App):
         if not term:
             self.notify("Please enter a search term", severity="warning")
             return
-            
+
         genre = self.query_one("#select_genre", Select).value
         order = self.query_one("#select_order", Select).value
-        
+
         logger.info(f"Starting TUI search: term='{term}', genre='{genre}', order='{order}'")
-        query = SearchQuery(term, 'all', genre, 0, order, 0, 'all')
-        
+        query = SearchQuery(term, "all", genre, 0, order, 0, "all")
+
         movie_table = self.query_one("#movie-table", DataTable)
         movie_table.clear()
-        
+
         self.notify("Searching... Please wait", timeout=3)
         self.run_search(query)
 
@@ -320,18 +323,18 @@ class TorrentCrawlerApp(App):
     def on_torrent_crawler_app_movies_fetched(self, message: MoviesFetched) -> None:
         self.movies = message.movies
         table_movies = self.query_one("#movie-table", DataTable)
-        
+
         table_movies.clear()
-        
+
         if not self.movies:
             self.notify("No movies found.", severity="error")
             return
-            
+
         for i, m in enumerate(self.movies):
-            links = ", ".join(m.raw_torrents.keys()) if hasattr(m, 'raw_torrents') else ""
+            links = ", ".join(m.raw_torrents.keys()) if hasattr(m, "raw_torrents") else ""
             imdb_score = m.ratings.imdb if m.ratings else ""
             table_movies.add_row(m.name, str(m.year), imdb_score, links, key=str(i))
-        
+
         self.notify(f"Found {len(self.movies)} movies.", severity="information")
         table_movies.focus()
 

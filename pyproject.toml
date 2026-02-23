@@ -35,3 +35,22 @@ torrent-crawler = "torrent_crawler.__main__:main"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["torrent_crawler*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+# E: Error, F: Pyflakes, I: Isort, B: Bugbear, S: Security (Bandit), UP: Pyupgrade
+select = ["E", "F", "I", "B", "S", "UP"]
+ignore = ["S113", "S110", "B904", "S104", "E501", "S603", "S606", "S607"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-single-line = false
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

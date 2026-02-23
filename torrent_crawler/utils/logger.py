@@ -1,12 +1,15 @@
-import sys
-import os
-import logging
-import time
 import functools
+import logging
+import os
+import sys
+import time
+
 from loguru import logger as _logger
+
 
 def log_runtime(func):
     """Decorator to measure and log the runtime of a function."""
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.perf_counter()
@@ -15,12 +18,15 @@ def log_runtime(func):
         runtime = end_time - start_time
         _logger.info(f"Function '{func.__name__}' executed in {runtime:.4f} seconds")
         return result
+
     return wrapper
+
 
 class InterceptHandler(logging.Handler):
     """
     Default handler from loguru documentation for intercepting standard logging messages.
     """
+
     def emit(self, record):
         # Get corresponding Loguru level if it exists
         try:
@@ -36,6 +42,7 @@ class InterceptHandler(logging.Handler):
 
         _logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
+
 def setup_logger():
     """Sets up the global logger with rotation and custom formatting."""
     log_dir = "logs"
@@ -50,7 +57,7 @@ def setup_logger():
         sys.stderr,
         format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
         level="INFO",
-        colorize=True
+        colorize=True,
     )
 
     # Add file handler with rotation and compression
@@ -60,13 +67,14 @@ def setup_logger():
         retention="1 week",
         compression="zip",
         format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
-        level="DEBUG"
+        level="DEBUG",
     )
 
     # Intercept standard logging from libraries like requests, urllib3
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
 
     return _logger
+
 
 # Initialize logger instance
 logger = setup_logger()
