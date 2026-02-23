@@ -67,6 +67,20 @@ python -m venv .venv
 pip install .
 ```
 
+## Dependencies Breakdown
+
+This project follows a "laboratorial" dependency management approach. Here is what powers the crawler under the hood:
+
+- **textual**: The core engine for our modern Dark-Theme Dashboard (TUI). It handles all terminal-based UI interactions.
+- **curl_cffi**: A high-performance HTTP client that impersonates real browsers (Chrome/Firefox) to bypass bot protection and ensuring stable crawling.
+- **typer**: Manages all Command Line entry points. It’s what allows you to switch between `tui`, `cli`, and `api` modes seamlessly.
+- **beautifulsoup4 & html5lib**: The "brain" of our scraper, used for deep-parsing HTML to find movie links, quality options, and metadata.
+- **Flask**: Powers the local API server, allowing other applications to query this crawler's data.
+- **dynaconf**: A powerful configuration manager that handles everything from site URLs to internal app settings across different environments.
+- **loguru**: Provides advanced, color-coded logging for better debugging and runtime monitoring.
+- **rich**: The styling layer that provides beautiful colors, tables, and formatting for both the CLI and TUI.
+- **beaupy**: Used in the legacy CLI mode to provide interactive, easy-to-navigate menus.
+
 ## Contributing
 Feel free to fork and submit PRs. This project is currently undergoing a major refactor to improve speed and UI consistency.
 
