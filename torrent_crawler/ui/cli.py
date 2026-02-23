@@ -89,10 +89,6 @@ class Search:
         if self.api_flag is True:
             return movies
         self.show_movies(movies)
-        if beaupy.confirm(Constants.restart_search_text):
-            main()
-        else:
-            console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
 
 class SearchInput:
     @staticmethod
@@ -109,9 +105,13 @@ class SearchInput:
         return SearchQuery(s, q, g, 0, o, 0, 'all')
 
 def main():
-    from torrent_crawler.ui.tui import TorrentCrawlerApp
-    app = TorrentCrawlerApp()
-    app.run()
+    while True:
+        query = SearchInput.create_query()
+        search_engine = Search(query)
+        search_engine.start(query)
+        if not beaupy.confirm(Constants.restart_search_text):
+            console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
+            break
 
 
 if __name__ == '__main__':

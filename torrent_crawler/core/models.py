@@ -20,14 +20,6 @@ class Torrents:
 
 
 class Movie:
-    header_format = 'ID|Name|Year|Link|Rotten Tomatoes Critics|Rotten Tomatoes Audience|IMDb' \
-                    '|3D.BluRay|720p.BluRay|1080p.BluRay|720p.WEB|1080p.WEB\n' \
-                    '---|---|---|---|---|---|---|---|---|---|---|---'
-    file_name = 'movies.md'
-    movie_format = '{}|{}|{}|[Link]({})|{}|{}|{}|' \
-                   ' [3D.BluRay]({})|[720p.BluRay]({})|[1080p.BluRay]({})|[720p.WEB]({})|[1080p.WEB]({})'
-    readme_created = True
-
     def __init__(self, movie_id, name, link, year):
         self.id = movie_id
         self.name = name
@@ -51,35 +43,22 @@ class Movie:
     def set_ratings(self, ratings):
         self.ratings = Ratings(ratings)
 
-    def save_list(self):
-        exists = True
-        if self.readme_created is False:
-            exists = os.path.isfile(self.file_name)
-        if not exists:
-            self.readme_created = True
-            header = self.header_format
-            with open(self.file_name, 'w') as text_file:
-                print(header, file=text_file)
-
-        movie_text = self.movie_text()
-        with open(self.file_name, 'a') as text_file:
-            print(movie_text, file=text_file)
-
-    def movie_text(self):
-        return self.movie_format.format(
-            self.id,
-            self.name,
-            self.year,
-            self.link,
-            self.ratings.rotten_tomatoes_critics,
-            self.ratings.rotten_tomatoes_audience,
-            self.ratings.imdb,
-            self.torrents.br3d,
-            self.torrents.br720,
-            self.torrents.br1080,
-            self.torrents.web720,
-            self.torrents.web1080
-        )
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'year': self.year,
+            'link': self.link,
+            'torrents': self.torrents.__dict__ if self.torrents else {},
+            'ratings': self.ratings.__dict__ if self.ratings else {},
+            'synopsis': self.synopsis,
+            'genres': self.genres,
+            'likes': self.likes,
+            'image': self.image,
+            'trailer': self.trailer,
+            'screenshots': self.screenshots,
+            'similar_movies': self.similar_movies
+        }
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)

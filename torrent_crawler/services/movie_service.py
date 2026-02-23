@@ -6,22 +6,14 @@ from torrent_crawler.utils.logger import logger, log_runtime
 MoviesList = List[Movie]
 
 class MovieService:
-    def __init__(self, api_flag=False, save_list=False, print_console=False):
+    def __init__(self, api_flag=False):
         self.api_flag = api_flag
-        self.should_save_list = save_list or False
-        self.should_print_to_console = print_console or False
         self.provider = YTSProvider()
 
     @log_runtime
     def crawl_list(self, query: SearchQuery) -> MoviesList:
         logger.info("Service: Crawling movie list")
-        movies = self.provider.search(query)
-        
-        if self.should_save_list:
-            for movie in movies:
-                movie.save_list()
-                
-        return movies
+        return self.provider.search(query)
 
     @log_runtime
     def crawl_movie(self, movie: Movie) -> Movie:

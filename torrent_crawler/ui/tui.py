@@ -315,8 +315,8 @@ class TorrentCrawlerApp(App):
 
     @work(thread=True, exclusive=True)
     def run_search(self, query: SearchQuery) -> None:
-        # api_flag=True and print_console=False to ensure clean output without print mess
-        service = MovieService(api_flag=True, print_console=False)
+        # api_flag=True to ensure clean output
+        service = MovieService(api_flag=True)
         movies = service.crawl_list(query)
         self.post_message(self.MoviesFetched(movies))
 
@@ -369,7 +369,7 @@ class TorrentCrawlerApp(App):
 
     @work(thread=True, exclusive=True)
     def run_detail_navigation(self, movie: Movie) -> None:
-        service = MovieService(api_flag=True, print_console=False)
+        service = MovieService(api_flag=True)
         movie = service.crawl_movie(movie)
         self.post_message(self.MovieDetailReady(movie))
 

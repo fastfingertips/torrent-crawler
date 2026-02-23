@@ -67,30 +67,6 @@ class Helper:
         console.print(f"[blue]Note::[/blue] {special_final_option}")
         return options[0]
 
-    @staticmethod
-    def update_progress(index, total):
-        """Show update progress for index out of total"""
-        bar_length = 30
-        status = ""
-        if total == 0:
-            progress = 0
-        else:
-            progress = index / total
-        if isinstance(progress, int):
-            progress = float(progress)
-        if not isinstance(progress, float):
-            progress = 0
-            status = "error: progress var must be float\r\n"
-        if progress < 0:
-            progress = 0
-            status = "Halt...\r\n"
-        if progress >= 1:
-            progress = 1
-            status = "Done...\r\n"
-        block = int(round(bar_length * progress))
-        text = "\rCrawling like a snake: [blue][{0}][/blue] {1}% [{2}/{3}] {4}".format(
-            "=" * block + "-" * (bar_length - block), int(progress * 100), index, total, status)
-        console.print(text, end="")
 
     @staticmethod
     def open_magnet_link(magnet):
