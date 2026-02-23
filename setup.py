@@ -23,7 +23,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'search-torrent=torrent_crawler.search:main',
+            'search-torrent=torrent_crawler.ui.cli:main',
         ],
     },
     install_requires=[

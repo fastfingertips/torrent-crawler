@@ -107,7 +107,7 @@ class SearchInput:
         return SearchQuery(s, q, g, 0, o, 0, 'all')
 
 def main():
-    from torrent_crawler.tui import TorrentCrawlerApp
+    from torrent_crawler.ui.tui import TorrentCrawlerApp
     app = TorrentCrawlerApp()
     app.run()
 

@@ -10,7 +10,7 @@ from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.helper import Helper
 from torrent_crawler.core.models import Movie, SearchQuery
-from torrent_crawler.search import Search
+from torrent_crawler.ui.cli import Search
 
 
 class MovieDetailScreen(Screen):
