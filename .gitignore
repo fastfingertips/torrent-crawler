@@ -110,3 +110,5 @@ movies*.md
 
 #debug
 debug_html/
+logs/
+.ruff_cache/
