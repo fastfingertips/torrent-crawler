@@ -28,8 +28,36 @@ class MovieDetailScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         with VerticalScroll(id="detail-container"):
-            yield Label(f"[bold]{self.movie.name} ({self.movie.year})[/bold]", id="title")
+            # Header Section
+            yield Label(f"[bold cyan]{self.movie.name} ({self.movie.year})[/bold cyan]", id="detail-title")
             
+            # Metadata Row
+            meta_info = []
+            if self.movie.genres:
+                meta_info.append(f"[yellow]{' / '.join(self.movie.genres)}[/yellow]")
+            if self.movie.likes:
+                meta_info.append(f"[red]❤ {self.movie.likes} Likes[/red]")
+            if hasattr(self.movie, 'ratings') and self.movie.ratings:
+                meta_info.append(f"[bold gold3]⭐ {self.movie.ratings.imdb} IMDb[/bold gold3]")
+            
+            if meta_info:
+                yield Label(" | ".join(meta_info), id="detail-meta")
+
+            # Synopsis
+            if self.movie.synopsis:
+                yield Label("\n[bold]Synopsis:[/bold]")
+                yield Label(f"[italic]{self.movie.synopsis}[/italic]", id="detail-synopsis")
+
+            # Actions Row
+            with Horizontal(id="detail-actions"):
+                if self.movie.trailer:
+                    btn_trailer = Button("Watch Trailer", id="btn_trailer", variant="primary")
+                    btn_trailer.link = self.movie.trailer
+                    yield btn_trailer
+                
+                yield Button("Back to Results", id="btn_back", variant="error")
+
+            # Torrents Section
             yield Label("\n[bold]Available Torrents:[/bold]")
             if hasattr(self.movie, 'raw_torrents') and self.movie.raw_torrents:
                 available = self.movie.raw_torrents
@@ -39,28 +67,29 @@ class MovieDetailScreen(Screen):
             if not available:
                 yield Label("[red]No torrents available[/red]")
             else:
-                for q, link in available.items():
-                    safe_id = f"dl_{q.replace('.', '_')}"
-                    btn = Button(f"Download {q}", id=safe_id, variant="success")
-                    btn.link = link
-                    yield btn
+                with Horizontal(id="torrent-buttons"):
+                    for q, link in available.items():
+                        safe_id = f"dl_{q.replace('.', '_')}"
+                        btn = Button(f"Download {q}", id=safe_id, variant="success")
+                        btn.link = link
+                        yield btn
             
+            # Subtitles Section
             if self.movie.subtitle_url:
                 yield Label("\n[bold]Subtitles (Fetching...):[/bold]", id="sub-title-label")
                 yield DataTable(id="sub-table")
                 self.fetch_subtitles()
             
             yield Label("\n")
-            yield Button("Back to Results", id="btn_back", variant="error")
         yield Footer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id.startswith("dl_"):
             Helper.open_magnet_link(event.button.link)
             self.app.notify(f"Opening magnet link for {event.button.label}")
-        elif event.button.id == "btn_subs":
+        elif event.button.id == "btn_trailer":
             Helper.open_magnet_link(event.button.link)
-            self.app.notify("Opening Subtitle link in browser")
+            self.app.notify("Opening Trailer in browser")
         elif event.button.id == "btn_back":
             self.app.pop_screen()
 
@@ -131,17 +160,34 @@ class TorrentCrawlerApp(App):
     }
     #detail-container {
         padding: 2;
-        align: center middle;
     }
-    #title {
+    #detail-title {
         text-align: center;
         width: 100%;
-        margin-bottom: 2;
+        margin-bottom: 1;
         content-align: center middle;
+        background: $boost;
+        padding: 1;
+    }
+    #detail-meta {
+        text-align: center;
+        width: 100%;
+        color: $text-muted;
+    }
+    #detail-synopsis {
+        padding: 1;
+        background: $surface;
+        border-left: solid $accent;
+        margin: 1 0;
+    }
+    #detail-actions, #torrent-buttons {
+        height: auto;
+        margin: 1 0;
     }
     MovieDetailScreen Button {
-        margin: 1;
-        width: 100%;
+        margin-right: 1;
+        width: auto;
+        min-width: 15;
     }
     #sub-table {
         margin: 1;

@@ -36,6 +36,13 @@ class Movie:
         self.torrents = None
         self.ratings = None
         self.subtitle_url = ''
+        self.synopsis = ''
+        self.trailer = ''
+        self.screenshots = []
+        self.genres = []
+        self.likes = 0
+        self.runtime = ''
+        self.image = ''
 
     def set_torrents(self, torrent_list):
         self.torrents = Torrents(torrent_list)

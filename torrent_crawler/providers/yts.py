@@ -96,7 +96,37 @@ class YTSProvider(BaseProvider):
                 movie.set_torrents(torrent_list)
                 movie.raw_torrents = torrent_list
                 movie.set_ratings(rating_list)
-            
+
+                # Extract synopsis
+                synopsis_div = soup.find('div', {'id': 'synopsis'})
+                if synopsis_div:
+                    movie.synopsis = synopsis_div.find('p').text.strip()
+
+                # Extract trailer
+                trailer_link = soup.find('a', {'id': 'playTrailer'})
+                if trailer_link:
+                    movie.trailer = trailer_link.get('href')
+
+                # Extract screenshots
+                screenshot_links = soup.find_all('a', {'class': 'screenshot-group'})
+                movie.screenshots = [s.get('href') for s in screenshot_links if s.get('href')]
+
+                # Extract likes
+                likes_span = soup.find('span', {'id': 'movie-likes'})
+                if likes_span:
+                    movie.likes = likes_span.text.strip()
+
+                # Extract genres from movie-info h2
+                info_h2s = movie_info.find_all('h2')
+                if len(info_h2s) > 1:
+                    genres_text = info_h2s[1].text
+                    movie.genres = [g.strip() for g in genres_text.split('/')]
+
+            # Extract cover image if not already set
+            img_tag = soup.find('div', {'id': 'movie-poster'}).find('img')
+            if img_tag:
+                movie.image = img_tag.get('src')
+
             movie_tech_specs = soup.find('div', {'id': 'movie-tech-specs'})
             if movie_tech_specs:
                 tech_spec = movie_tech_specs.find('div', {'class': 'tech-spec-info'})
