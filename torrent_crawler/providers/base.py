@@ -1,11 +1,11 @@
 import os
 import re
-from abc import ABC, abstractmethod
 from curl_cffi import requests
 from torrent_crawler.core.models import Movie, SearchQuery
 from typing import List
+from torrent_crawler.utils.logger import logger
 
-class BaseProvider(ABC):
+class BaseProvider:
     def __init__(self):
         self.session = requests.Session(impersonate="chrome")
         self.max_movies_in_page = 20
@@ -14,9 +14,20 @@ class BaseProvider(ABC):
         if not os.path.exists(self.debug_dir):
             os.makedirs(self.debug_dir)
 
+    def get(self, url: str, **kwargs):
+        """Perform a GET request using the shared session with logging and debugging."""
+        try:
+            logger.debug(f"Provider: Fetching {url}")
+            response = self.session.get(url, timeout=15, **kwargs)
+            self.save_html(url, response.text)
+            response.raise_for_status()
+            return response
+        except Exception as e:
+            logger.error(f"Provider: Request failed for {url}: {str(e)}")
+            raise
+
     def save_html(self, url: str, content: str):
         """Saves the raw HTML content to a local file for debugging."""
-        # Clean URL to create a safe filename
         safe_name = re.sub(r'[^\w\-_\. ]', '_', url.replace('https://', '').replace('http://', ''))
         filename = os.path.join(self.debug_dir, f"{safe_name}.html")
         
@@ -26,10 +37,8 @@ class BaseProvider(ABC):
         except Exception:
             pass
 
-    @abstractmethod
     def search(self, query: SearchQuery) -> List[Movie]:
-        pass
+        raise NotImplementedError
 
-    @abstractmethod
     def get_details(self, movie: Movie) -> Movie:
-        pass
+        raise NotImplementedError

@@ -1,16 +1,12 @@
-import io
 import os
-from curl_cffi import requests
 import sys
 import subprocess
-import zipfile
 import beaupy
 from torrent_crawler.core.constants import Constants
 from rich.console import Console
 from torrent_crawler.utils.logger import logger
 
 console = Console()
-
 
 class Helper:
     @staticmethod
@@ -41,10 +37,9 @@ class Helper:
         specific_text = Constants.specific_text[input_type]
         console.print(f"[bold]{specific_text}[/bold]")
         
-        # Use beaupy to select from options
         selected = beaupy.select(options, cursor=">", cursor_style="cyan")
         if not selected:
-            exit(0) # User cancelled with Esc
+            exit(0)
         return selected
 
     @staticmethod
@@ -56,7 +51,6 @@ class Helper:
         selection_text = Constants.selection_text[input_type]
         special_final_option = Constants.special_final_option[input_type]
         specific_final_option = Constants.specific_final_option[input_type]
-        
         options = Constants.options[input_type]
         
         if beaupy.confirm(selection_text):
@@ -66,7 +60,6 @@ class Helper:
         
         console.print(f"[blue]Note::[/blue] {special_final_option}")
         return options[0]
-
 
     @staticmethod
     def open_magnet_link(magnet):
@@ -83,35 +76,16 @@ class Helper:
             logger.error(f"Helper: Failed to open magnet link: {str(e)}")
 
     @staticmethod
-    def __get_downloads_folder():
+    def get_downloads_folder():
         """Returns the default downloads path for linux or windows"""
         if os.name == 'nt':
-            import winreg
-            sub_key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
-            downloads_guid = '{374DE290-123F-4565-9164-39C4925E467B}'
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
-                location = winreg.QueryValueEx(key, downloads_guid)[0]
-            return location
+            try:
+                import winreg
+                sub_key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
+                downloads_guid = '{374DE290-123F-4565-9164-39C4925E467B}'
+                with winreg.OpenKey(winreg.HKEY_CURRENT_USER, sub_key) as key:
+                    location = winreg.QueryValueEx(key, downloads_guid)[0]
+                return location
+            except Exception:
+                pass
         return os.path.join(os.path.expanduser('~'), 'Downloads', 'subtitles')
-
-    @staticmethod
-    def __get_zip_file(url):
-        """Downloads zipped files from url"""
-        r = requests.get(url, impersonate="chrome")
-        return zipfile.ZipFile(io.BytesIO(r.content))
-
-    @staticmethod
-    def download_srt(url):
-        """Downloads and extracts .srt file from zip url"""
-        logger.info(f"Helper: Starting subtitle download from {url}")
-        try:
-            my_zip = Helper.__get_zip_file(url)
-            storage_path = Helper.__get_downloads_folder()
-            console.print(f"[bold]{Constants.download_zip_text.format('', storage_path)}[/bold]")
-            for file in my_zip.namelist():
-                if my_zip.getinfo(file).filename.endswith('.srt'):
-                    logger.debug(f"Helper: Extracting subtitle file: {file}")
-                    my_zip.extract(file, storage_path)  # extract the file to current folder if it is a text file
-            logger.info(f"Helper: Subtitles extracted to {storage_path}")
-        except Exception as e:
-            logger.error(f"Helper: Failed to download/extract subtitles: {str(e)}")

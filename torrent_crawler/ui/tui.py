@@ -7,7 +7,8 @@ from textual.message import Message
 
 from torrent_crawler.core.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
-from torrent_crawler.services.subtitle_service import SubtitleService
+from torrent_crawler.providers.yts import YTSProvider
+from torrent_crawler.providers.subtitles import SubtitleProvider
 from torrent_crawler.utils.helper import Helper
 from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.ui.cli import Search
@@ -117,7 +118,8 @@ class MovieDetailScreen(Screen):
     def fetch_subtitles(self) -> None:
         logger.debug(f"Fetching subtitles for URL: {self.movie.subtitle_url}")
         try:
-            subtitles = SubtitleService.crawl_movie(self.movie.subtitle_url)
+            provider = SubtitleProvider()
+            subtitles = provider.crawl_movie(self.movie.subtitle_url)
             self.post_message(self.SubtitlesFetched(subtitles))
         except Exception as e:
             logger.error(f"Failed to fetch subtitles: {str(e)}")
@@ -148,7 +150,8 @@ class MovieDetailScreen(Screen):
         if event.data_table.id == "sub-table":
             link = self.subtitle_links.get(event.row_key.value)
             if link:
-                Helper.download_srt(link)
+                provider = SubtitleProvider()
+                provider.download_subtitle(link)
                 self.app.notify(f"Downloading subtitle ZIP: {link}")
 class TorrentCrawlerApp(App):
     CSS = """

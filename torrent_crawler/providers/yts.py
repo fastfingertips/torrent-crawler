@@ -28,12 +28,9 @@ class YTSProvider(BaseProvider):
                 request_url = '{0}?page={1}'.format(search_url, page_no)
             
             try:
-                logger.debug(f"Fetching search results from: {request_url}")
-                req = self.session.get(request_url, timeout=10)
-                self.save_html(request_url, req.text)
+                req = self.get(request_url)
                 soup = BeautifulSoup(req.text, features='html5lib')
-            except Exception as e:
-                logger.error(f"Failed to fetch search results: {str(e)}")
+            except Exception:
                 break
 
             if page_no == 1:
@@ -99,9 +96,7 @@ class YTSProvider(BaseProvider):
     @log_runtime
     def get_details(self, movie: Movie) -> Movie:
         try:
-            logger.debug(f"Fetching movie details from: {movie.link}")
-            req = self.session.get(movie.link, timeout=10)
-            self.save_html(movie.link, req.text)
+            req = self.get(movie.link)
             soup = BeautifulSoup(req.text, features='html5lib')
             
             # Extract cover image

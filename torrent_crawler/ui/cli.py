@@ -3,7 +3,7 @@ import beaupy
 from typing import Dict, List
 from torrent_crawler.core.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
-from torrent_crawler.services.subtitle_service import SubtitleService
+from torrent_crawler.providers.subtitles import SubtitleProvider
 from torrent_crawler.utils.helper import Helper
 from torrent_crawler.core.models import Movie, Torrents, SearchQuery
 from rich.console import Console
@@ -81,8 +81,8 @@ class Search:
 
             if movie_selected.subtitle_url and movie_selected.subtitle_url != '':
                 if beaupy.confirm(Constants.selection_text['subtitle']):
-                    subtitle = SubtitleService()
-                    subtitle.search_subtitle(movie_selected.subtitle_url)
+                    subtitle_prov = SubtitleProvider()
+                    subtitle_prov.search_subtitle(movie_selected.subtitle_url)
 
             
             if beaupy.confirm(Constants.another_movies_text.format("", self.search_query.search_term)):
