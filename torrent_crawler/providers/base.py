@@ -10,8 +10,9 @@ class BaseProvider:
         self.session = requests.Session(impersonate="chrome")
         self.max_movies_in_page = 20
         self.debug_dir = "debug_html"
+        self.debug_html_enabled = os.environ.get("TORRENT_CRAWLER_DEBUG_HTML") == "1"
         
-        if not os.path.exists(self.debug_dir):
+        if self.debug_html_enabled and not os.path.exists(self.debug_dir):
             os.makedirs(self.debug_dir)
 
     def get(self, url: str, **kwargs):
@@ -19,7 +20,8 @@ class BaseProvider:
         try:
             logger.debug(f"Provider: Fetching {url}")
             response = self.session.get(url, timeout=15, **kwargs)
-            self.save_html(url, response.text)
+            if self.debug_html_enabled:
+                self.save_html(url, response.text)
             response.raise_for_status()
             return response
         except Exception as e:
