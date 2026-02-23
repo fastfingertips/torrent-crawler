@@ -1,5 +1,4 @@
 import io
-import os
 import zipfile
 from bs4 import BeautifulSoup
 from torrent_crawler.core.constants import Constants

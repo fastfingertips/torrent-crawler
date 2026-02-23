@@ -1,5 +1,4 @@
 import json
-import os
 from torrent_crawler.core.constants import Constants
 
 

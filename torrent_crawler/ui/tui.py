@@ -7,7 +7,6 @@ from textual.message import Message
 
 from torrent_crawler.core.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
-from torrent_crawler.providers.yts import YTSProvider
 from torrent_crawler.providers.subtitles import SubtitleProvider
 from torrent_crawler.utils.helper import Helper
 from torrent_crawler.core.models import Movie, SearchQuery
