@@ -1,7 +1,7 @@
 from typing import List
 from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.providers.yts import YTSProvider
-from torrent_crawler.utils.logger import logger
+from torrent_crawler.utils.logger import logger, log_runtime
 
 MoviesList = List[Movie]
 
@@ -12,6 +12,7 @@ class MovieService:
         self.should_print_to_console = print_console or False
         self.provider = YTSProvider()
 
+    @log_runtime
     def crawl_list(self, query: SearchQuery) -> MoviesList:
         logger.info("Service: Crawling movie list")
         movies = self.provider.search(query)
@@ -22,6 +23,7 @@ class MovieService:
                 
         return movies
 
+    @log_runtime
     def crawl_movie(self, movie: Movie) -> Movie:
         logger.info(f"Service: Fetching details for movie: {movie.name}")
         return self.provider.get_details(movie)

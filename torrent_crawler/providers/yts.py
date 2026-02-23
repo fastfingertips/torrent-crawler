@@ -4,13 +4,14 @@ from typing import List
 from torrent_crawler.providers.base import BaseProvider
 from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.core.constants import Constants
-from torrent_crawler.utils.logger import logger
+from torrent_crawler.utils.logger import logger, log_runtime
 
 class YTSProvider(BaseProvider):
     def __init__(self):
         super().__init__()
         self.list_url = Constants.list_url
 
+    @log_runtime
     def search(self, search_query: SearchQuery) -> List[Movie]:
         search_url = search_query.get_url()
         page_no = 1
@@ -83,6 +84,7 @@ class YTSProvider(BaseProvider):
                 
         return movies
 
+    @log_runtime
     def get_details(self, movie: Movie) -> Movie:
         try:
             logger.debug(f"Fetching movie details from: {movie.link}")

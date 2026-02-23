@@ -1,7 +1,21 @@
 import sys
 import os
 import logging
+import time
+import functools
 from loguru import logger as _logger
+
+def log_runtime(func):
+    """Decorator to measure and log the runtime of a function."""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        runtime = end_time - start_time
+        _logger.info(f"Function '{func.__name__}' executed in {runtime:.4f} seconds")
+        return result
+    return wrapper
 
 class InterceptHandler(logging.Handler):
     """
