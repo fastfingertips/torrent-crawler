@@ -143,10 +143,21 @@ class MovieDetailScreen(Screen):
         table.cursor_type = "row"
         self.subtitle_links = {}
 
+        preferred_langs = [lang.lower() for lang in getattr(consts.settings, "user_preferences", {}).get("preferred_languages", [])]
+        
+        # Sort subtitles: preferred languages first
+        sorted_subtitles = sorted(
+            message.subtitles.items(),
+            key=lambda x: x[0].lower() not in preferred_langs
+        )
+
         row_id = 0
-        for lang, subs in message.subtitles.items():
+        for lang, subs in sorted_subtitles:
+            is_preferred = lang.lower() in preferred_langs
+            display_lang = f"⭐ {lang}" if is_preferred else lang
+            
             for sub in subs:
-                table.add_row(lang, sub.get("rating", ""), key=str(row_id))
+                table.add_row(display_lang, sub.get("rating", ""), key=str(row_id))
                 self.subtitle_links[str(row_id)] = sub.get("link")
                 row_id += 1
 

@@ -1,5 +1,10 @@
 input_types = ["genre", "order", "subtitle"]
 
+[user_preferences]
+# Preferred subtitle languages (case-insensitive)
+# If set, these languages will be prioritized/highlighted in the UI
+preferred_languages = ["english"]
+
 [options]
 quality = ["all", "720p", "1080p", "2160p", "3D"]
 genre = [

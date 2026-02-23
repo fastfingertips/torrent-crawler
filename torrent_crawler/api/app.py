@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 
 from torrent_crawler.core.models import SearchQuery
 from torrent_crawler.services.movie_service import MovieService
-from torrent_crawler.utils.logger import logger
+from torrent_crawler.utils.logger import enable_console_logging, logger
 
 app = Flask(__name__)
 
@@ -42,6 +42,7 @@ def get_movies():
 
 
 def run():
+    enable_console_logging()
     logger.info("Starting Flask API server on port 5000")
     app.run(host="0.0.0.0", port=5000)
 

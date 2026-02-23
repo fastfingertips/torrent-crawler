@@ -3,7 +3,7 @@ import typer
 from torrent_crawler.api.app import run as run_api
 from torrent_crawler.ui.cli import main as cli_main
 from torrent_crawler.ui.tui import TorrentCrawlerApp
-from torrent_crawler.utils.logger import logger
+from torrent_crawler.utils.logger import enable_console_logging, logger
 
 app = typer.Typer(help="Torrent Crawler - Search and download torrents with style.", add_completion=False)
 
@@ -23,6 +23,7 @@ def start_cli():
 
 @app.command(name="api", help="Start the Flask API server")
 def start_api():
+    enable_console_logging()
     logger.info("Starting Torrent Crawler API server")
     run_api()
 

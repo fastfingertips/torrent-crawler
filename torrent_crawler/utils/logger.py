@@ -43,7 +43,7 @@ class InterceptHandler(logging.Handler):
         _logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
 
-def setup_logger():
+def setup_logger(enable_console: bool = False):
     """Sets up the global logger with rotation and custom formatting."""
     log_dir = "logs"
     if not os.path.exists(log_dir):
@@ -52,13 +52,14 @@ def setup_logger():
     # Remove default handler
     _logger.remove()
 
-    # Add custom console handler with colors
-    _logger.add(
-        sys.stderr,
-        format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
-        level="INFO",
-        colorize=True,
-    )
+    # Add custom console handler with colors if enabled
+    if enable_console:
+        _logger.add(
+            sys.stderr,
+            format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+            level="INFO",
+            colorize=True,
+        )
 
     # Add file handler with rotation and compression
     _logger.add(
@@ -76,5 +77,11 @@ def setup_logger():
     return _logger
 
 
-# Initialize logger instance
-logger = setup_logger()
+def enable_console_logging():
+    """Dynamically enable console logging. Useful for API mode."""
+    _logger.remove()
+    setup_logger(enable_console=True)
+
+
+# Initialize logger instance (Default: Console OFF, File ON)
+logger = setup_logger(enable_console=False)
