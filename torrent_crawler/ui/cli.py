@@ -85,8 +85,11 @@ class Search:
 
         mid = int(selected_choice.split(":")[0])
         movie_selected = movies[mid - 1]
-        
-        console.print(f"[blue]Note::[/blue] Selected movie: [bold cyan]{movie_selected.name} ({movie_selected.year})[/bold cyan]", style="none")
+
+        console.print(
+            f"[blue]Note::[/blue] Selected movie: [bold cyan]{movie_selected.name} ({movie_selected.year})[/bold cyan]",
+            style="none",
+        )
         logger.info(f"CLI: User selected movie: {movie_selected.name}")
 
         # Fetch full details (magnets, etc) now that user picked one
