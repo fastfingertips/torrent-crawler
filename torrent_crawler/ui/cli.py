@@ -77,7 +77,6 @@ class Search:
     MoviesList = list[Movie]
 
     def show_movies(self, movies: MoviesList):
-        console.print("[bold]Select a movie: [/bold]")
         choices = [f"{ind + 1}: {movie.name} ({movie.year})" for ind, movie in enumerate(movies)]
         selected_choice = beaupy.select(choices, cursor=">", cursor_style="cyan")
 
@@ -86,7 +85,8 @@ class Search:
 
         mid = int(selected_choice.split(":")[0])
         movie_selected = movies[mid - 1]
-        console.print(f"\n[bold green]Selected movie:[/bold green] [cyan]{movie_selected.name} ({movie_selected.year})[/cyan]\n")
+        
+        console.print(f"[blue]Note::[/blue] Selected movie: [bold cyan]{movie_selected.name} ({movie_selected.year})[/bold cyan]", style="none")
         logger.info(f"CLI: User selected movie: {movie_selected.name}")
 
         # Fetch full details (magnets, etc) now that user picked one
@@ -110,7 +110,6 @@ class Search:
                     DownloadService().open_magnet_link(torrent_link)
                     console.print(f"{consts.CLICK_LINK_TEXT} [red]{torrent_link}[/red]")
             else:
-                console.print("[bold]Select quality:[/bold]")
                 selected_quality = beaupy.select(available_keys, cursor=">", cursor_style="cyan")
                 if selected_quality:
                     torrent_link = available_torrents[selected_quality]
