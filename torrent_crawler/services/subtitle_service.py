@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from curl_cffi import requests
-from torrent_crawler.constants import Constants
+from torrent_crawler.core.constants import Constants
 from torrent_crawler.helper import Helper
 
 class SubtitleService:

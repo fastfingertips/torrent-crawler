@@ -1,4 +1,5 @@
 from flask import Flask, request
+from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.core.models import SearchQuery
 from torrent_crawler.core.constants import Constants
 import json
@@ -18,7 +19,6 @@ def salvador():
     quality = request.args.get('quality') or Constants.quality[0]
     rating = 0
     search_query = SearchQuery(search_string, quality, genre, rating, order_by)
-    from torrent_crawler.services.movie_service import MovieService
     service = MovieService(api_flag=True)
     movies = service.crawl_list(search_query)
     result = [json.loads(movie.to_json()) for movie in movies]

@@ -1,24 +1,21 @@
 import signal
 import beaupy
 from typing import Dict, List
-from torrent_crawler.constants import Constants
+from torrent_crawler.core.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.helper import Helper
-from torrent_crawler.models import Movie, Torrents, SearchQuery
+from torrent_crawler.core.models import Movie, Torrents, SearchQuery
 from rich.console import Console
-console = Console()
 
+
+console = Console()
 
 def sigint_handler(signum, frame):
     console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
     exit(1)
 
-
 signal.signal(signal.SIGINT, sigint_handler)
-
-
-
 
 class Search:
     def __init__(self, search_query: SearchQuery, api_flag: bool = False):
@@ -96,7 +93,6 @@ class Search:
         else:
             console.print(f"\n[blue]{Constants.thanks_text}[/blue]")
 
-
 class SearchInput:
     @staticmethod
     def create_query() -> SearchQuery:
@@ -109,7 +105,6 @@ class SearchInput:
         o = Helper.take_optional_input('order')
 
         return SearchQuery(s, q, g, 0, o, 0, 'all')
-
 
 def main():
     from torrent_crawler.tui import TorrentCrawlerApp

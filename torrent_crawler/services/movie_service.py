@@ -1,5 +1,5 @@
 from typing import List
-from torrent_crawler.models import Movie, SearchQuery
+from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.providers.yts import YTSProvider
 
 MoviesList = List[Movie]

@@ -1,4 +1,4 @@
-from torrent_crawler.config import settings
+from torrent_crawler.core.config import settings
 
 class Constants:
     # movie search constants

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from curl_cffi import requests
-from torrent_crawler.models import Movie, SearchQuery
+from torrent_crawler.core.models import Movie, SearchQuery
 from typing import List
 
 class BaseProvider(ABC):

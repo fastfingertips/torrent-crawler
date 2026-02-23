@@ -5,11 +5,13 @@ from textual.screen import Screen
 from textual import work
 from textual.message import Message
 
-from torrent_crawler.constants import Constants
+from torrent_crawler.core.constants import Constants
 from torrent_crawler.services.movie_service import MovieService
 from torrent_crawler.services.subtitle_service import SubtitleService
 from torrent_crawler.helper import Helper
-from torrent_crawler.search import Search, SearchQuery
+from torrent_crawler.core.models import Movie, SearchQuery
+from torrent_crawler.search import Search
+
 
 class MovieDetailScreen(Screen):
     """Screen to show movie details and download links."""
@@ -272,11 +274,11 @@ class TorrentCrawlerApp(App):
             if key.startswith("sub_") and hasattr(self, 'independent_sub_links'):
                 sub_data = self.independent_sub_links.get(key)
                 if sub_data:
-                    from torrent_crawler.models import Movie
                     dummy_movie = Movie(0, sub_data["name"], "", 0)
                     dummy_movie.subtitle_url = sub_data["url"]
                     dummy_movie.raw_torrents = {}
                     self.push_screen(MovieDetailScreen(dummy_movie, self))
+
 
 if __name__ == "__main__":
     app = TorrentCrawlerApp()

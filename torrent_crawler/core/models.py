@@ -1,6 +1,6 @@
 import json
 import os
-from torrent_crawler.constants import Constants
+from torrent_crawler.core.constants import Constants
 
 
 class Ratings:

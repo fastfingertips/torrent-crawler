@@ -5,7 +5,7 @@ import sys
 import subprocess
 import zipfile
 import beaupy
-from torrent_crawler.constants import Constants
+from torrent_crawler.core.constants import Constants
 from rich.console import Console
 
 console = Console()
