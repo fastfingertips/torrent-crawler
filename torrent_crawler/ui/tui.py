@@ -338,7 +338,8 @@ class TorrentCrawlerApp(App):
         self.independent_sub_links = {}
         for i, m in enumerate(self.movies):
             links = ", ".join(m.raw_torrents.keys()) if hasattr(m, 'raw_torrents') else ""
-            table_movies.add_row(m.name, str(m.year), m.ratings.imdb if hasattr(m, 'ratings') else "", links, key=str(i))
+            imdb_score = m.ratings.imdb if m.ratings else ""
+            table_movies.add_row(m.name, str(m.year), imdb_score, links, key=str(i))
             
             if hasattr(m, 'subtitle_url') and m.subtitle_url:
                 table_subs.add_row(m.name, "[blue]Click to fetch subtitles[/blue]", key=f"sub_{i}")
