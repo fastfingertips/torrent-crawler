@@ -267,8 +267,6 @@ class TorrentCrawlerApp(App):
                 with Vertical(id="tables-container"):
                     yield Label("Movies", classes="table-label")
                     yield DataTable(id="movie-table")
-                    yield Label("Subtitles", classes="table-label")
-                    yield DataTable(id="subtitle-table")
                 
         yield Footer()
 
@@ -276,10 +274,6 @@ class TorrentCrawlerApp(App):
         table_movies = self.query_one("#movie-table", DataTable)
         table_movies.add_columns("Title", "Year", "IMDb", "Links")
         table_movies.cursor_type = "row"
-        
-        table_subs = self.query_one("#subtitle-table", DataTable)
-        table_subs.add_columns("Movie Title", "Subtitle Link")
-        table_subs.cursor_type = "row"
         
         self.query_one("#input_term", Input).focus()
 
@@ -326,24 +320,17 @@ class TorrentCrawlerApp(App):
     def on_torrent_crawler_app_movies_fetched(self, message: MoviesFetched) -> None:
         self.movies = message.movies
         table_movies = self.query_one("#movie-table", DataTable)
-        table_subs = self.query_one("#subtitle-table", DataTable)
         
         table_movies.clear()
-        table_subs.clear()
         
         if not self.movies:
             self.notify("No movies found.", severity="error")
             return
             
-        self.independent_sub_links = {}
         for i, m in enumerate(self.movies):
             links = ", ".join(m.raw_torrents.keys()) if hasattr(m, 'raw_torrents') else ""
             imdb_score = m.ratings.imdb if m.ratings else ""
             table_movies.add_row(m.name, str(m.year), imdb_score, links, key=str(i))
-            
-            if hasattr(m, 'subtitle_url') and m.subtitle_url:
-                table_subs.add_row(m.name, "[blue]Click to fetch subtitles[/blue]", key=f"sub_{i}")
-                self.independent_sub_links[f"sub_{i}"] = {"name": m.name, "url": m.subtitle_url}
         
         self.notify(f"Found {len(self.movies)} movies.", severity="information")
         table_movies.focus()
@@ -355,16 +342,7 @@ class TorrentCrawlerApp(App):
                 idx = int(key)
                 movie = self.movies[idx]
                 logger.info(f"Selected movie from table: {movie.name}")
-                self.push_screen(MovieDetailScreen(movie, self))
-        elif event.data_table.id == "subtitle-table":
-            key = str(event.row_key.value)
-            if key.startswith("sub_") and hasattr(self, 'independent_sub_links'):
-                sub_data = self.independent_sub_links.get(key)
-                if sub_data:
-                    dummy_movie = Movie(0, sub_data["name"], "", 0)
-                    dummy_movie.subtitle_url = sub_data["url"]
-                    dummy_movie.raw_torrents = {}
-                    self.push_screen(MovieDetailScreen(dummy_movie, self))
+                self.navigate_to_movie(movie)
 
     def navigate_to_movie(self, movie: Movie) -> None:
         """Helper to fetch full details and show the detail screen."""

@@ -175,14 +175,13 @@ class YTSProvider(BaseProvider):
                         })
                 movie.similar_movies = similar_movies
 
-            # Extract subtitle URL if available (usually in tech specs)
-            movie_tech_specs = soup.find('div', {'id': 'movie-tech-specs'})
-            if movie_tech_specs:
-                tech_spec = movie_tech_specs.find('div', {'class': 'tech-spec-info'})
-                if tech_spec:
-                    subtitle_link = tech_spec.find('a')
-                    if subtitle_link:
-                        movie.subtitle_url = subtitle_link.get('href')
+            # Extract subtitle URL by finding IMDb ID (YTS movie-imdb URLs are based on it)
+            imdb_link = soup.find('a', title='IMDb Rating')
+            if imdb_link:
+                href = imdb_link.get('href')
+                if href and '/title/' in href:
+                    imdb_id = href.split('/title/')[1].strip('/')
+                    movie.subtitle_url = f"https://yifysubtitles.ch/movie-imdb/{imdb_id}"
                         
         except Exception as e:
             logger.error(f"Error parsing details for {movie.name}: {str(e)}")
