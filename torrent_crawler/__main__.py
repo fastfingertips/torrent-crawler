@@ -1,5 +1,5 @@
 import typer
-from typing import Optional
+
 from torrent_crawler.ui.tui import TorrentCrawlerApp
 from torrent_crawler.ui.cli import main as cli_main
 from torrent_crawler.api.app import run as run_api

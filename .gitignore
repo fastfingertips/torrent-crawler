@@ -107,3 +107,6 @@ venv.bak/
 
 movies*.md
 .secrets.toml
+
+#debug
+debug_html/

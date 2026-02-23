@@ -25,6 +25,7 @@ class YTSProvider(BaseProvider):
             
             try:
                 req = self.session.get(request_url, timeout=10)
+                self.save_html(request_url, req.text)
                 soup = BeautifulSoup(req.text, features='html5lib')
             except Exception:
                 break
@@ -70,6 +71,7 @@ class YTSProvider(BaseProvider):
     def get_details(self, movie: Movie) -> Movie:
         try:
             req = self.session.get(movie.link, timeout=10)
+            self.save_html(movie.link, req.text)
             soup = BeautifulSoup(req.text, features='html5lib')
             movie_info = soup.find('div', {'id': 'movie-info'})
             if movie_info:
