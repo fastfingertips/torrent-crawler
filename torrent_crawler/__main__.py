@@ -23,12 +23,15 @@ def start_api():
     run_api()
 
 @app.callback(invoke_without_command=True)
-def main(ctx: typer.Context):
+def callback(ctx: typer.Context):
     """
     If no command is provided, default to TUI.
     """
     if ctx.invoked_subcommand is None:
         start_tui()
 
-if __name__ == "__main__":
+def main():
     app()
+
+if __name__ == "__main__":
+    main()
