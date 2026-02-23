@@ -1,0 +1,197 @@
+/*
+ * Torrent Crawler Style Sheet (TCSS)
+ * Modern, Dark, High-Contrast Terminal UI
+ */
+
+/* Global Theme Variables Overrides */
+$primary: #00bcd4;
+$primary-lighten-1: #33c9dc;
+$primary-darken-1: #00838f;
+$accent: #ff4081;
+$secondary: #7c4dff;
+$background: #121212;
+$surface: #1e1e1e;
+$boost: #252525;
+
+/* Main App Layout */
+TorrentCrawlerApp {
+    background: $background;
+}
+
+#sidebar {
+    width: 35;
+    dock: left;
+    padding: 1 2;
+    background: $boost;
+    height: 100%;
+    border-right: tall $primary-darken-1;
+}
+
+#main-content {
+    height: 100%;
+    width: 1fr;
+    background: $background;
+}
+
+/* Typography & Labels */
+.label {
+    margin-top: 1;
+    text-style: bold;
+    color: $primary-lighten-1;
+    content-align: left middle;
+}
+
+.table-label {
+    margin: 1 0 0 0;
+    text-style: bold;
+    color: $background;
+    background: $primary;
+    width: 100%;
+    padding: 0 2;
+    height: 1;
+}
+
+/* Sidebar Widgets */
+Input {
+    background: $surface;
+    border: none;
+    margin-bottom: 1;
+    color: $text;
+}
+
+Input:focus {
+    border: tall $primary;
+}
+
+Select {
+    background: $surface;
+    border: none;
+    margin-bottom: 1;
+}
+
+Select:focus {
+    border: tall $primary;
+}
+
+/* DataTable Customization */
+DataTable {
+    height: 1fr;
+    width: 100%;
+    background: $background;
+    border: none;
+    margin: 0;
+    scrollbar-color: $primary;
+}
+
+DataTable > .datatable--header {
+    text-style: bold;
+    background: $surface;
+    color: $primary;
+}
+
+DataTable > .datatable--cursor {
+    background: $primary 30%;
+    color: $text;
+    text-style: bold;
+}
+
+/* Movie Detail Screen Styling */
+#detail-container {
+    padding: 1 4;
+    background: $background;
+}
+
+#detail-title {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 1;
+    content-align: center middle;
+    background: $boost;
+    padding: 1;
+    color: $primary;
+    text-style: bold;
+    border: double $primary;
+}
+
+#detail-meta {
+    text-align: center;
+    width: 100%;
+    color: $text-muted;
+    margin-bottom: 1;
+    text-style: italic;
+}
+
+#detail-synopsis {
+    padding: 1 2;
+    background: $surface;
+    border-left: vline $accent;
+    margin: 1 0;
+    height: auto;
+    max-height: 12;
+    color: $text;
+}
+
+#detail-actions, #torrent-buttons, #similar-movies {
+    height: auto;
+    margin: 1 0;
+}
+
+.section-label {
+    text-style: bold underline;
+    color: $primary;
+    margin-top: 1;
+}
+
+/* Button System */
+Button {
+    margin: 0 1 0 0;
+    height: 3;
+    min-width: 14;
+    padding: 0 2;
+    border: none;
+    background: $surface;
+    color: $text;
+    text-style: bold;
+    transition: background 150ms in_out_cubic, color 150ms in_out_cubic;
+}
+
+Button:hover {
+    background: $primary;
+    color: #000;
+    text-style: bold;
+    /* transition-duration does not exist in TCSS yet but we use the transition above */
+}
+
+Button.-active {
+    background: $accent;
+    color: $text;
+}
+
+/* Specific Buttons */
+#btn_search {
+    width: 1fr;
+    margin-top: 2;
+    background: $primary-darken-1;
+    color: $text;
+}
+
+#btn_search:hover {
+    background: $primary;
+    color: #000;
+}
+
+.btn-similar {
+    width: 28;
+    background: $boost;
+}
+
+.btn-torrent {
+    background: $surface;
+    border: thin $primary 20%;
+}
+
+#sub-table {
+    margin: 1 0;
+    height: auto;
+    border: none;
+}

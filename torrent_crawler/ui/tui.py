@@ -53,21 +53,21 @@ class MovieDetailScreen(Screen):
             # Actions Row
             with Horizontal(id="detail-actions"):
                 if self.movie.trailer:
-                    btn_trailer = Button("Watch Trailer", id="btn_trailer", variant="primary")
+                    btn_trailer = Button("🎬 Watch Trailer", id="btn_trailer", variant="primary")
                     btn_trailer.link = self.movie.trailer
                     yield btn_trailer
 
-                yield Button("Back to Results", id="btn_back", variant="error")
+                yield Button("◀ Back to Results", id="btn_back", variant="error")
 
             # Torrents Section
-            yield Label("\n[bold]Available Torrents:[/bold]")
+            yield Label("\nAvailable Torrents:", classes="section-label")
             if hasattr(self.movie, "raw_torrents") and self.movie.raw_torrents:
                 available = self.movie.raw_torrents
             else:
                 available = self.app_instance.search_handler.get_available_torrents(self.movie.torrents)
 
             if not available:
-                yield Label("[red]No torrents available[/red]")
+                yield Label("  [red]⚠ No torrents available[/red]")
             else:
                 import re
 
@@ -82,13 +82,13 @@ class MovieDetailScreen(Screen):
 
             # Subtitles Section
             if self.movie.subtitle_url:
-                yield Label("\n[bold]Subtitles (Fetching...):[/bold]", id="sub-title-label")
+                yield Label("\nSubtitles:", id="sub-title-label", classes="section-label")
                 yield DataTable(id="sub-table")
                 self.fetch_subtitles()
 
             # Similar Movies Section
             if self.movie.similar_movies:
-                yield Label("\n[bold]Similar Movies:[/bold]")
+                yield Label("\nSimilar Movies:", classes="section-label")
                 with Horizontal(id="similar-movies"):
                     for sim in self.movie.similar_movies:
                         # Display as a clickable button or label
@@ -159,122 +159,8 @@ class MovieDetailScreen(Screen):
 
 
 class TorrentCrawlerApp(App):
-    CSS = """
-    #sidebar {
-        width: 30;
-        dock: left;
-        padding: 1;
-        background: $boost;
-        height: 100%;
-        border-right: tall $background;
-    }
-    .label {
-        margin-top: 1;
-        text-style: bold;
-        color: $text-muted;
-    }
-    #main-content {
-        height: 100%;
-        width: 1fr;
-        background: $background;
-    }
-    #tables-container {
-        width: 1fr;
-        height: 100%;
-    }
-    #movie-table {
-        height: 1fr;
-        width: 100%;
-        margin: 0 1;
-        border: none;
-    }
-    .table-label {
-        margin: 1 0 0 1;
-        text-style: bold;
-        color: $primary;
-        background: $boost;
-        width: 100%;
-        padding: 0 1;
-    }
-    #detail-container {
-        padding: 1 2;
-    }
-    #detail-title {
-        text-align: center;
-        width: 100%;
-        margin-bottom: 1;
-        content-align: center middle;
-        background: $boost;
-        padding: 1;
-        color: $primary;
-        text-style: bold;
-    }
-    #detail-meta {
-        text-align: center;
-        width: 100%;
-        color: $text-muted;
-        margin-bottom: 1;
-    }
-    #detail-synopsis {
-        padding: 1;
-        background: $surface;
-        border-left: solid $primary;
-        margin: 1 0;
-        height: auto;
-        max-height: 10;
-    }
-    #detail-actions, #torrent-buttons, #similar-movies {
-        height: auto;
-        margin: 1 0;
-    }
-    #similar-movies {
-        overflow-x: scroll;
-        width: 100%;
-        height: 5;
-    }
-    
-    /* Unified Button Design */
-    Button {
-        margin: 0 1 0 0;
-        height: 3;
-        min-width: 12;
-        padding: 0 1;
-        border: none;
-        background: $surface;
-        color: $text;
-        text-style: bold;
-        transition: background 200ms in_out_cubic;
-    }
-    
-    Button:hover {
-        background: $primary;
-        color: $text;
-        text-style: bold italic;
-    }
-    
-    Button.-active {
-        background: $primary-darken-1;
-    }
-
-    .btn-similar {
-        width: 20;
-    }
-    
-    #btn_search {
-        width: 100%;
-        margin-top: 1;
-        background: $primary-darken-2;
-    }
-    
-    #btn_search:hover {
-        background: $primary;
-    }
-
-    #sub-table {
-        margin: 1;
-        height: auto;
-    }
-    """
+class TorrentCrawlerApp(App):
+    CSS_PATH = "styles.tcss"
 
     BINDINGS = [
         ("q", "quit", "Quit"),
