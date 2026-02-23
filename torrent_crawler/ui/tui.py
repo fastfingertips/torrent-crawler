@@ -166,30 +166,38 @@ class TorrentCrawlerApp(App):
         padding: 1;
         background: $boost;
         height: 100%;
+        border-right: tall $background;
     }
     .label {
         margin-top: 1;
+        text-style: bold;
+        color: $text-muted;
     }
     #main-content {
         height: 100%;
         width: 1fr;
+        background: $background;
     }
     #tables-container {
         width: 1fr;
         height: 100%;
     }
-    #movie-table, #subtitle-table {
+    #movie-table {
         height: 1fr;
         width: 100%;
         margin: 0 1;
+        border: none;
     }
     .table-label {
         margin: 1 0 0 1;
         text-style: bold;
-        color: $accent;
+        color: $primary;
+        background: $boost;
+        width: 100%;
+        padding: 0 1;
     }
     #detail-container {
-        padding: 2;
+        padding: 1 2;
     }
     #detail-title {
         text-align: center;
@@ -198,17 +206,22 @@ class TorrentCrawlerApp(App):
         content-align: center middle;
         background: $boost;
         padding: 1;
+        color: $primary;
+        text-style: bold;
     }
     #detail-meta {
         text-align: center;
         width: 100%;
         color: $text-muted;
+        margin-bottom: 1;
     }
     #detail-synopsis {
         padding: 1;
         background: $surface;
-        border-left: solid $accent;
+        border-left: solid $primary;
         margin: 1 0;
+        height: auto;
+        max-height: 10;
     }
     #detail-actions, #torrent-buttons, #similar-movies {
         height: auto;
@@ -217,30 +230,55 @@ class TorrentCrawlerApp(App):
     #similar-movies {
         overflow-x: scroll;
         width: 100%;
-        height: 6;
+        height: 5;
     }
+    
+    /* Unified Button Design */
+    Button {
+        margin: 0 1 0 0;
+        height: 3;
+        min-width: 12;
+        padding: 0 1;
+        border: none;
+        background: $surface;
+        color: $text;
+        text-style: bold;
+        transition: background 200ms sleep;
+    }
+    
+    Button:hover {
+        background: $primary;
+        color: $text;
+        text-style: bold italic;
+    }
+    
+    Button.-active {
+        background: $primary-darken-1;
+    }
+
     .btn-similar {
-        margin-right: 1;
-        width: 25;
-        border: tall $accent;
+        width: 20;
     }
-    MovieDetailScreen Button {
-        margin-right: 1;
-        width: auto;
-        min-width: 15;
-    }
-    #sub-table {
-        margin: 1;
-        height: auto;
-    }
+    
     #btn_search {
         width: 100%;
         margin-top: 1;
+        background: $primary-darken-2;
+    }
+    
+    #btn_search:hover {
+        background: $primary;
+    }
+
+    #sub-table {
+        margin: 1;
+        height: auto;
     }
     """
 
     BINDINGS = [
         ("q", "quit", "Quit"),
+        ("d", "toggle_dark", "Toggle Dark Mode"),
         ("down", "focus_next", "Next"),
         ("up", "focus_previous", "Previous"),
         ("right", "focus_next", "Next"),
@@ -248,6 +286,7 @@ class TorrentCrawlerApp(App):
     ]
 
     def on_mount(self):
+        self.dark = True
         self.movies = []
         self.search_handler = Search(SearchQuery("", "", "", 0, "", 0, ""), api_flag=True)
 
