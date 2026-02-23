@@ -4,9 +4,9 @@ from bs4 import BeautifulSoup
 from torrent_crawler.core.constants import Constants
 from torrent_crawler.utils.helper import Helper
 from torrent_crawler.utils.logger import logger
-from torrent_crawler.providers.base import BaseProvider
+from torrent_crawler.providers.base import HTTPClient
 
-class SubtitleProvider(BaseProvider):
+class SubtitleProvider(HTTPClient):
     def __init__(self):
         super().__init__()
 

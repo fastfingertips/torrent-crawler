@@ -1,12 +1,12 @@
 import re
 from bs4 import BeautifulSoup
 from typing import List
-from torrent_crawler.providers.base import BaseProvider
+from torrent_crawler.providers.base import AbstractMovieProvider
 from torrent_crawler.core.models import Movie, SearchQuery
 from torrent_crawler.core.constants import Constants
 from torrent_crawler.utils.logger import logger, log_runtime
 
-class YTSProvider(BaseProvider):
+class YTSProvider(AbstractMovieProvider):
     def __init__(self):
         super().__init__()
         self.list_url = Constants.list_url

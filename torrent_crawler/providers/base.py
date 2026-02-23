@@ -5,7 +5,7 @@ from torrent_crawler.core.models import Movie, SearchQuery
 from typing import List
 from torrent_crawler.utils.logger import logger
 
-class BaseProvider:
+class HTTPClient:
     def __init__(self):
         self.session = requests.Session(impersonate="chrome")
         self.max_movies_in_page = 20
@@ -39,6 +39,7 @@ class BaseProvider:
         except Exception:
             pass
 
+class AbstractMovieProvider(HTTPClient):
     def search(self, query: SearchQuery) -> List[Movie]:
         raise NotImplementedError
 

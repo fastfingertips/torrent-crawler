@@ -298,9 +298,7 @@ class TorrentCrawlerApp(App):
         query = SearchQuery(term, 'all', genre, 0, order, 0, 'all')
         
         movie_table = self.query_one("#movie-table", DataTable)
-        sub_table = self.query_one("#subtitle-table", DataTable)
         movie_table.clear()
-        sub_table.clear()
         
         self.notify("Searching... Please wait", timeout=3)
         self.run_search(query)
