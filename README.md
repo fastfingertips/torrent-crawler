@@ -74,7 +74,7 @@ This project follows a "laboratorial" dependency management approach. Here is wh
 - **textual**: The core engine for our modern Dark-Theme Dashboard (TUI). It handles all terminal-based UI interactions.
 - **curl_cffi**: A high-performance HTTP client that impersonates real browsers (Chrome/Firefox) to bypass bot protection and ensuring stable crawling.
 - **typer**: Manages all Command Line entry points. It’s what allows you to switch between `tui`, `cli`, and `api` modes seamlessly.
-- **beautifulsoup4 & html5lib**: The "brain" of our scraper, used for deep-parsing HTML to find movie links, quality options, and metadata.
+- **beautifulsoup4 & lxml**: The "brain" of our scraper. `lxml` provides industrial-grade parsing speed and reliability for extracting data from HTML.
 - **Flask**: Powers the local API server, allowing other applications to query this crawler's data.
 - **dynaconf**: A powerful configuration manager that handles everything from site URLs to internal app settings across different environments.
 - **loguru**: Provides advanced, color-coded logging for better debugging and runtime monitoring.

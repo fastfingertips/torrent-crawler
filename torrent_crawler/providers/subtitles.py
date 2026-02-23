@@ -24,7 +24,7 @@ class SubtitleProvider(HTTPClient):
             url = self.get_search_url(search_term, page_no)
             try:
                 req = self.get(url)
-                soup = BeautifulSoup(req.text, features="html5lib")
+                soup = BeautifulSoup(req.text, features="lxml")
                 media_list = soup.find_all("li", {"class": "media-movie-clickable"})
                 logger.info(f"SubtitleProvider: Found {len(media_list)} matching items")
                 for media in media_list:
@@ -39,7 +39,7 @@ class SubtitleProvider(HTTPClient):
         logger.info(f"SubtitleProvider: Crawling movie subtitles from {url}")
         try:
             req = self.get(url)
-            soup = BeautifulSoup(req.text, features="html5lib")
+            soup = BeautifulSoup(req.text, features="lxml")
             subtitle_table_tag = soup.find("table", {"class": "other-subs"})
             if not subtitle_table_tag:
                 logger.warning("SubtitleProvider: No subtitle table found")

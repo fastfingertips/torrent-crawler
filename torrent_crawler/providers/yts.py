@@ -31,7 +31,7 @@ class YTSProvider(AbstractMovieProvider):
 
             try:
                 req = self.get(request_url)
-                soup = BeautifulSoup(req.text, features="html5lib")
+                soup = BeautifulSoup(req.text, features="lxml")
             except Exception:
                 break
 
