@@ -68,9 +68,12 @@ class MovieDetailScreen(Screen):
             if not available:
                 yield Label("[red]No torrents available[/red]")
             else:
+                import re
                 with Horizontal(id="torrent-buttons"):
                     for q, link in available.items():
-                        safe_id = f"dl_{q.replace('.', '_')}"
+                        # Textual IDs can only contain [a-zA-Z0-9_-]
+                        clean_q = re.sub(r'[^a-zA-Z0-9_\-]', '_', q)
+                        safe_id = f"dl_{clean_q}"
                         btn = Button(f"Download {q}", id=safe_id, variant="success")
                         btn.link = link
                         yield btn
